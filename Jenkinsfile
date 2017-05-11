@@ -39,11 +39,11 @@ pipeline {
         stage('Selenium') {
             agent {
                 docker {
-                    image 'ruby:2.1-alpine'
+                    image 'ruby:2.1.10'
                 }
             }
             steps {
-                sh 'echo boom'
+                sh 'gem install selenium-webdriver'
             }
         }
     }
