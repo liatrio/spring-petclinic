@@ -44,6 +44,7 @@ pipeline {
             }
             steps {
                 sh 'gem install selenium-webdriver'
+                sh 'gem install headless'
                 sh 'ruby selenium.rb'
             }
         }
