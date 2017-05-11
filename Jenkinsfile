@@ -44,7 +44,8 @@ pipeline {
             }
             steps {
                 sh 'gem install selenium-webdriver'
-                sh 'apt-get install xvfb firefox'
+                sh 'apt-get update -y'
+                sh 'apt-get install xvfb -y'
                 sh 'gem install headless'
                 sh 'ruby selenium.rb'
             }
