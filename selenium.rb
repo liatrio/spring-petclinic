@@ -1,5 +1,5 @@
-require ‘headless’
-require ‘selenium-webdriver’
+require 'headless'
+require 'selenium-webdriver'
 
 headless = Headless.new
 
