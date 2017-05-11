@@ -1,6 +1,7 @@
 pipeline {
     agent none
     stages {
+
         stage('Build') {
             agent {
                 docker {
@@ -26,11 +27,7 @@ pipeline {
             }
         }
         stage('Sonar') {
-            agent {
-                docker {
-                    image 'alpine'
-                }
-            }
+            agent any
             steps {
                 sh '/var/jenkins_home/sonar/bin/sonar-runner'
             }
