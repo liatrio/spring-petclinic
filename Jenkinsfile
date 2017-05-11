@@ -15,14 +15,19 @@ pipeline {
             }
         }
         stage('Deploy to Tomcat') {
+            agent {docker {image: 'alpine'}}
             steps {
                 sh 'cp target/petclinic.war /usr/share/jenkins/ref/petclinic/petclinic.war'
             }
         }
         stage('Sonar') {
+            agent {docker {image: 'alpine'}}
             steps {
                 sh '/var/jenkins_home/sonar/bin/sonar-runner'
             }
+        }
+        stage('Selenium') {
+            agent {docker {image: 'alpine'}}
         }
     }
 }
