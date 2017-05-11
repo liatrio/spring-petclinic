@@ -1,12 +1,12 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.5.0'
-            args '--network=plumbing_default'
-        }
-    }
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'maven:3.5.0'
+                    args '--network=plumbing_default'
+                }
+            }
             steps {
                 configFileProvider(
                         [configFile(fileId: 'nexus', variable: 'MAVEN_SETTINGS')]) {
