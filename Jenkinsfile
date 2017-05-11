@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Deploy to Tomcat') {
             steps {
-                sh 'mv target/petclinic.war /usr/share/jenkins/ref/petclinic/petclinic.war'
+                sh 'cp target/petclinic.war /usr/share/jenkins/ref/petclinic/petclinic.war'
             }
         }
         stage('Sonar') {
