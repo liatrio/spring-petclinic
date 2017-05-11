@@ -41,6 +41,9 @@ pipeline {
                     image 'alpine'
                 }
             }
+            steps {
+                sh 'echo boom'
+            }
         }
     }
 }
