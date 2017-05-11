@@ -6,22 +6,22 @@ pipeline {
         }
     }
     stages {
-        stage ('Build') {
+        stage('Build') {
             steps {
                 configFileProvider(
-                    [configFile(fileId: 'nexus', variable: 'MAVEN_SETTINGS')]) {
-                        sh 'mvn -s $MAVEN_SETTINGS clean deploy -DskipTests=true'
-                    }
+                        [configFile(fileId: 'nexus', variable: 'MAVEN_SETTINGS')]) {
+                    sh 'mvn -s $MAVEN_SETTINGS clean deploy -DskipTests=true'
+                }
             }
         }
-        stage ('Deploy to Tomcat') {
+        stage('Deploy to Tomcat') {
             steps {
-                sh 'cp target/petclinic.war /usr/share/jenkins/ref/petclinic/petclinic.war'
+                sh 'mv target/petclinic.war /usr/share/jenkins/ref/petclinic/petclinic.war'
             }
         }
-        stage ('Sonar') {
-           steps {
-               sh '/var/jenkins_home/sonar/bin/sonar-runner'
+        stage('Sonar') {
+            steps {
+                sh '/var/jenkins_home/sonar/bin/sonar-runner'
             }
         }
     }
