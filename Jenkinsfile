@@ -30,6 +30,7 @@ pipeline {
             agent  {
                 docker {
                     image 'sebp/sonar-runner'
+                    args '--network=plumbing_default'
                 }
             }
             steps {
