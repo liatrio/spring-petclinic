@@ -18,7 +18,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             agent {
                 docker {
-                    image: 'alpine'
+                    image 'alpine'
                 }
             }
             steps {
@@ -28,7 +28,7 @@ pipeline {
         stage('Sonar') {
             agent {
                 docker {
-                    image: 'alpine'
+                    image 'alpine'
                 }
             }
             steps {
@@ -38,7 +38,7 @@ pipeline {
         stage('Selenium') {
             agent {
                 docker {
-                    image: 'alpine'
+                    image 'alpine'
                 }
             }
         }
