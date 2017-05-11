@@ -27,9 +27,13 @@ pipeline {
             }
         }
         stage('Sonar') {
-            agent any
+            agent  {
+                docker {
+                    image 'sebp/sonar-runner'
+                }
+            }
             steps {
-                sh '/var/jenkins_home/sonar/bin/sonar-runner'
+                sh '/opt/sonar-runner-2.4/bin/sonar-runner'
             }
         }
         stage('Selenium') {
