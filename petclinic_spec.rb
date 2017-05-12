@@ -25,13 +25,13 @@ describe 'Petlinic' do
   end
 
 
-  describe 'when homepage is available' do
-    it 'click the find owners button' do
-        @driver.find_element(:class, "icon-search").click
-        form = @driver.find_element(:id, "lastName")
-        puts "form is  #{form.label}"
-      assert @driver.title == "PetClinic :: a Spring Framework demonstration"
-    end
-  end
+  # describe 'when homepage is available' do
+  #   it 'click the find owners button' do
+  #       @driver.find_element(:class, "icon-search").click
+  #       form = @driver.find_element(:id, "lastName")
+  #       puts "form is  #{form.label}"
+  #     assert @driver.title == "PetClinic :: a Spring Framework demonstration"
+  #   end
+  # end
 
 end
