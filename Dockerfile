@@ -10,4 +10,5 @@ RUN gem install selenium-webdriver && echo 'deb http://mozilla.debian.net/ jessi
 && chmod +x geckodriver \
 && cp geckodriver /usr/local/bin \
 && apt-get install xvfb -y \
-&& gem install headless 
+&& gem install headless
+ADD . /usr/localdev
