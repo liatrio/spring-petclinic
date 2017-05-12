@@ -44,13 +44,18 @@ pipeline {
             }
             steps {
                 sh 'gem install selenium-webdriver'
+                sh "echo 'deb http://mozilla.debian.net/ jessie-backports firefox-release' > /etc/apt/sources.list.d/debian-mozilla.list"
                 sh 'apt-get update -y'
+                sh 'cd ~/'
+                sh 'wget mozilla.debian.net/pkg-mozilla-archive-keyring_1.1_all.deb'
+                sh 'dpkg -i pkg-mozilla-archive-keyring_1.1_all.deb'
                 sh 'wget https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz'
-                sh 'tar -xvzf geckodriver-v0.16.1-linux64.tar.gz'
-                sh 'rm geckodriver-v0.16.1-linux64.tar.gz'
+                sh 'tar -xvzf geckodriver-v0.16.1-linux64.tar.gz''
+                sh 'rm geckodriver-v0.16.1-linux64.tar.gz''
                 sh 'chmod +x geckodriver'
                 sh 'cp geckodriver /usr/local/bin/'
                 sh 'apt-get install xvfb -y'
+                sh 'apt-get install -t jessie-backports firefox -y --force-yes'
                 sh 'gem install headless'
                 sh 'ruby selenium.rb'
             }
