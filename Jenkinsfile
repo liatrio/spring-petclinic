@@ -64,8 +64,11 @@ pipeline {
                 sh 'apt-get install xvfb -y'
                 sh 'gem install headless'
 
+                // test framework
+                sh 'gem install minitest'
+
                 // run tests
-                sh 'ruby selenium.rb'
+                sh 'ruby petclinic_spec.rb'
             }
         }
     }
