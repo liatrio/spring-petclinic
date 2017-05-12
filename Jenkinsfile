@@ -45,7 +45,12 @@ pipeline {
             steps {
                 sh 'gem install selenium-webdriver'
                 sh 'apt-get update -y'
-                sh 'apt-get install firefox-esr xvfb -y'
+                sh 'wget https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-linux64.tar.gz'
+                sh 'tar -xvzf geckodriver-v0.16.1-linux64.tar.gz'
+                sh 'rm geckodriver-v0.16.1-linux64.tar.gz'
+                sh 'chmod +x geckodriver'
+                sh 'cp geckodriver /usr/local/bin/'
+                sh 'apt-get install xvfb -y'
                 sh 'gem install headless'
                 sh 'ruby selenium.rb'
             }
