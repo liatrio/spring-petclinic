@@ -44,7 +44,7 @@ pipeline {
             }
             steps {
                 sh 'gem install selenium-webdriver'
-                sh 'apt-add-repository ppa:mozillateam/firefox-next'
+                sh 'add-apt-repository ppa:mozillateam/firefox-next'
                 sh 'apt-get update -y'
                 sh 'apt-get install xvfb firefox -y'
                 sh 'gem install headless'
