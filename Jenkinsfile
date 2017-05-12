@@ -40,6 +40,7 @@ pipeline {
             agent {
                 docker {
                     image 'ruby:2.1.10'
+                    args '--network=plumbing_default'
                 }
             }
             steps {
