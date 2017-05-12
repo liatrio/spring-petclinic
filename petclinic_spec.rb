@@ -5,21 +5,21 @@ require 'minitest/autorun'
 
 describe 'Petlinic' do
   before do
-    headless = Headless.new
-    headless.start
+    @headless = Headless.new
+    @headless.start
 
-    driver = Selenium::WebDriver.for :firefox
-    driver.navigate.to 'http://dashboard:8080/petclinic'
+    @driver = Selenium::WebDriver.for :firefox
+    @driver.navigate.to 'http://dashboard:8080/petclinic'
   end
 
   after do
-    headless.destroy
+    @headless.destroy
   end
 
   describe 'when homepage is available' do
-    it 'I should see Home button' do
-      puts "Title is: #{driver.title}"
-      raise if driver.title.blank?
+    it 'I should see Page title' do
+      puts "Title is: #{@driver.title}"
+      raise if @driver.title.blank?
     end
   end
 
