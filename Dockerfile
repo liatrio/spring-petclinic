@@ -11,5 +11,7 @@ RUN gem install selenium-webdriver \
 && chmod +x geckodriver \
 && cp geckodriver /usr/local/bin \
 && apt-get install xvfb -y \
-&& gem install headless
+&& gem install headless \
+&& gem install minitest
+
 ADD . /usr/localdev
