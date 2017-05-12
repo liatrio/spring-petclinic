@@ -18,7 +18,8 @@ describe Petclinic do
 
   describe 'when homepage is available' do
     it 'I should see Home button' do
-      raise if driver.title.blank
+      puts "Title is: #{driver.title}"
+      raise if driver.title.blank?
     end
   end
 
