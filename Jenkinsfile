@@ -68,7 +68,7 @@ pipeline {
                 sh 'gem install minitest'
 
                 // run tests
-                sh 'ruby selenium.rb'
+                sh 'ruby petclinic_spec.rb'
             }
         }
     }
