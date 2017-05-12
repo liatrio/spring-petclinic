@@ -19,7 +19,7 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
     it 'I should see Page title' do
       puts "Title is: #{@driver.title}"
-      raise if @driver.title.blank?
+      raise unless @driver.title.blank?
     end
   end
 
