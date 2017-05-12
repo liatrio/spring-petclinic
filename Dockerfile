@@ -1,5 +1,6 @@
 FROM ruby:2.1.10
-RUN gem install selenium-webdriver && echo 'deb http://mozilla.debian.net/ jessie-backports firefox-release' > /etc/apt/sources.list.d/debian-mozilla.list \
+RUN gem install selenium-webdriver \
+&& echo 'deb http://mozilla.debian.net/ jessie-backports firefox-release' > /etc/apt/sources.list.d/debian-mozilla.list \
 && apt-get update -y \
 && wget mozilla.debian.net/pkg-mozilla-archive-keyring_1.1_all.deb \
 && dpkg -i pkg-mozilla-archive-keyring_1.1_all.deb \
