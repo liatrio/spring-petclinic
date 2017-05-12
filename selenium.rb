@@ -6,6 +6,6 @@ headless = Headless.new
 headless.start
 
 driver = Selenium::WebDriver.for :firefox
-driver.navigate.to 'http://dashboard/petclinic'
+driver.navigate.to 'http://dashboard:8080/petclinic'
 puts "Page title: #{driver.title}"
 headless.destroy
