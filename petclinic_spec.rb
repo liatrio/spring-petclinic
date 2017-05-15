@@ -10,7 +10,7 @@ describe 'Petlinic' do
 
     @driver = Selenium::WebDriver.for :firefox
     @driver.navigate.to 'http://tomcat:8080/petclinic'
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 3)
+    @wait = Selenium::WebDriver::Wait.new(:timeout => 10)
     @driver.manage.timeouts.implicit_wait = 30
   end
 
@@ -27,7 +27,6 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
     it 'click the find owners link' do
         @driver.find_element(:class, "icon-search").click
-        sleep 2
         h2 = @driver.find_element(:tag_name, "h2")
         assert h2.text == "Find Owners"
     end
@@ -36,8 +35,9 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
       it 'click the veterinarians link' do
           @driver.find_element(:class, "icon-th-list").click
-          sleep 2
-          h2 = @driver.find_element(:tag_name, "h2")
+          h2 = @driver.find_element(:tag_name, "h2") if @wait.until {
+              @driver.find_element(:tag_name, "h2")
+          }
           assert h2.text == "Veterinarians"
       end
   end
@@ -45,7 +45,6 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
       it 'search for veterinarian' do
           @driver.find_element(:class, "icon-th-list").click
-          sleep 2
           search_box = @driver.find_element(:id, "vets_filter")
           textBox = search_box.find_element(:tag_name, "input")
           textBox.send_keys("Helen Leary")
