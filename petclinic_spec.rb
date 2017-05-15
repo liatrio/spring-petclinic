@@ -10,7 +10,7 @@ describe 'Petlinic' do
 
     @driver = Selenium::WebDriver.for :firefox
     @driver.navigate.to 'http://tomcat:8080/petclinic'
-    @wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+    @wait = Selenium::WebDriver::Wait.new(:timeout => 30)
     @driver.manage.timeouts.implicit_wait = 30
   end
 
