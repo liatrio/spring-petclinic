@@ -47,9 +47,8 @@ describe 'Petlinic' do
           @driver.find_element(:class, "icon-th-list").click
           sleep 2
           search_box = @driver.find_element(:id, "vets_filter")
-          textBoom = search_box.find_element(:tag_name, "input")
-          textBoom.send_keys("Helen Leary")
-          @driver.save_screenshot("boom.png")
+          textBox = search_box.find_element(:tag_name, "input")
+          textBox.send_keys("Helen Leary")
           vets = @driver.find_element(:id, "vets").text
           assert vets.split("\n")[1] == "Helen Leary radiology"
       end
