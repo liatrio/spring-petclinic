@@ -35,9 +35,8 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
       it 'click the veterinarians link' do
           @driver.find_element(:class, "icon-th-list").click
-          h2 = @driver.find_element(:tag_name, "h2") if @wait.until {
-              @driver.find_element(:tag_name, "h2")
-          }
+          sleep 3
+          h2 = @driver.find_element(:tag_name, "h2")
           assert h2.text == "Veterinarians"
       end
   end
