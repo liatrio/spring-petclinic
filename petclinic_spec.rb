@@ -28,6 +28,7 @@ describe 'Petlinic' do
   describe 'when homepage is available' do
     it 'click the find owners link' do
         @driver.find_element(:class, "icon-search").click
+        sleep 3
         h2 = @driver.find_element(:tag_name, "h2")
         assert h2.text == "Find Owners"
     end
