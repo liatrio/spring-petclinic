@@ -20,7 +20,8 @@ describe 'Petlinic' do
 
   describe 'when homepage is available' do
     it 'I should see page title containing PetClinic' do
-      assert @driver.title == "PetClinic :: a Spring Framework demonstration"
+        sleep 3
+        assert @driver.title == "PetClinic :: a Spring Framework demonstration"
     end
   end
 
