@@ -11,6 +11,7 @@ describe 'Petlinic' do
     @driver = Selenium::WebDriver.for :firefox
     @driver.navigate.to 'http://tomcat:8080/petclinic'
     @wait = Selenium::WebDriver::Wait.new(:timeout => 3)
+    @driver.manage.timeouts.implicit_wait = 4
   end
 
   after do
@@ -25,13 +26,12 @@ describe 'Petlinic' do
   end
 
 
-  # describe 'when homepage is available' do
-  #   it 'click the find owners button' do
-  #       @driver.find_element(:class, "icon-search").click
-  #       form = @driver.find_element(:id, "lastName")
-  #       puts "form is  #{form.label}"
-  #     assert @driver.title == "PetClinic :: a Spring Framework demonstration"
-  #   end
-  # end
+  describe 'when homepage is available' do
+    it 'click the find owners button' do
+        @driver.find_element(:class, "icon-search").click
+        h2 = @driver.find_element(:tag_name, "h2")
+        assert h2.text == "Find Owners"
+    end
+  end
 
 end
