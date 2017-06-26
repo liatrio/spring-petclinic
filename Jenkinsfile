@@ -34,8 +34,7 @@ pipeline {
                }
            }
            steps {
-               sh 'echo running Sonar'
-               //sh '/opt/sonar-runner-2.4/bin/sonar-runner'
+               sh '/opt/sonar-runner-2.4/bin/sonar-runner'
            }
        }
         stage('Selenium') {
