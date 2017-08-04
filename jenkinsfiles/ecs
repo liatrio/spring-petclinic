@@ -19,14 +19,14 @@ pipeline {
     stage('Deploy to ECS Development') {
       agent {
         docker {
-          image 'some-repo/ecs-cli'
+          image 'liatrio/ecs-cli'
           args  '-u 0:0'
         }
       }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "# run docker compose for dev"
+          sh "ecs-cli --version"
           echo "Should be accessible at DEV URL"
           input 'Deploy to ECS Production?'
         }
