@@ -1,4 +1,5 @@
 #!groovy
+// Assumes that there is an AWS EC2 key pair with the id ecs
 pipeline {
   agent none
   stages {
