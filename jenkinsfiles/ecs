@@ -27,7 +27,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "ecs-cli --version"
+          sh "ecs-cli up --keypair ecs --capability-iam --size 3 --instance-type t2.micro"
         }
       }
     }
@@ -41,7 +41,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "ecs-cli --version"
+          sh "ecs-cli compose --project-name spring-petclinic-dev --file ecs-compose.yml up"
           echo "Should be accessible at DEV URL"
         }
       }
@@ -56,7 +56,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "ecs-cli --version"
+          sh "ecs-cli compose --project-name spring-petclinic-qa --file ecs-compose.yml up"
           echo "Should be accessible at QA URL"
           input 'Deploy to ECS Production?'
         }
@@ -72,7 +72,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "ecs-cli --version"
+          sh "ecs-cli compose --project-name spring-petclinic-prod --file ecs-compose.yml up"
           echo "Should be accessible at PROD URL"
         }
       }
