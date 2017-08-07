@@ -16,7 +16,21 @@ pipeline {
           }
       }
     }
-    stage('Deploy to ECS Development') {
+    stage('Create ECS Cluster') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
+          sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
+          sh "ecs-cli --version"
+        }
+      }
+    }
+    stage('Deploy to ECS DEV') {
       agent {
         docker {
           image 'liatrio/ecs-cli'
@@ -28,7 +42,37 @@ pipeline {
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
           sh "ecs-cli --version"
           echo "Should be accessible at DEV URL"
+        }
+      }
+    }
+    stage('Deploy to ECS QA') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
+          sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
+          sh "ecs-cli --version"
+          echo "Should be accessible at QA URL"
           input 'Deploy to ECS Production?'
+        }
+      }
+    }
+    stage('Deploy to ECS PROD') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
+          sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
+          sh "ecs-cli --version"
+          echo "Should be accessible at PROD URL"
         }
       }
     }
