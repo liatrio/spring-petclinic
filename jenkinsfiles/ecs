@@ -27,7 +27,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh "ecs-cli up --keypair ecs --capability-iam --size 3 --instance-type t2.micro"
+          sh "ecs-cli up --force --keypair ecs --capability-iam --size 3 --instance-type t2.micro"
         }
       }
     }
