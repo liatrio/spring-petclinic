@@ -1,0 +1,6 @@
+spring-petclinic:
+  image: shanem/spring-petclinic
+  cpu_shares: 100
+  mem_limit: 262144000
+  ports:
+    - "80:8080"
