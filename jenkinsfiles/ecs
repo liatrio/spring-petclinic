@@ -17,13 +17,13 @@ pipeline {
           }
       }
     }
-    agent {
-      docker {
-        image 'liatrio/ecs-cli'
-        args  '-u 0:0'
-      }
-    }
     stage('Create ECS Cluster') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
@@ -32,6 +32,12 @@ pipeline {
       }
     }
     stage('Deploy to ECS DEV') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
@@ -41,6 +47,12 @@ pipeline {
       }
     }
     stage('Deploy to ECS QA') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
@@ -51,6 +63,12 @@ pipeline {
       }
     }
     stage('Deploy to ECS PROD') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
@@ -60,6 +78,12 @@ pipeline {
       }
     }
     stage('Output Results') {
+      agent {
+        docker {
+          image 'liatrio/ecs-cli'
+          args  '-u 0:0'
+        }
+      }
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
