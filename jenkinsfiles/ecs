@@ -79,7 +79,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
           sh "ecs-cli compose --project-name spring-petclinic-dev --file ecs-compose.yml up"
-          sh """ecs-cli ps | grep -m 1 dev | awk -F'RUNNING  |:' '{print \"DEV URL: http://\"\$2\"/petclinic\"}'"""
+          sh "ecs-cli ps | grep -m 1 dev | awk -F'RUNNING  |:' '{print \"DEV URL: http://\"\$2\"/petclinic\"}'"
         }
       }
     }
@@ -94,7 +94,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
           sh "ecs-cli compose --project-name spring-petclinic-qa --file ecs-compose.yml up"
-          sh """ecs-cli ps | grep -m 1 qa | awk -F'RUNNING  |:' '{print \"QA URL: http://\"\$2\"/petclinic\"}'"""
+          sh "ecs-cli ps | grep -m 1 qa | awk -F'RUNNING  |:' '{print \"QA URL: http://\"\$2\"/petclinic\"}'"
           input 'Deploy to ECS Production?'
         }
       }
@@ -110,7 +110,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
           sh "ecs-cli compose --project-name spring-petclinic-prod --file ecs-compose.yml up"
-          sh """ecs-cli ps | grep -m 1 prod | awk -F'RUNNING  |:' '{print \"PROD URL: http://\"\$2\"/petclinic\"}'"""
+          sh "ecs-cli ps | grep -m 1 prod | awk -F'RUNNING  |:' '{print \"PROD URL: http://\"\$2\"/petclinic\"}'"
         }
       }
     }
@@ -124,9 +124,9 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ECS', passwordVariable: 'awsSecret', usernameVariable: 'awsAccess')]){
           sh "ecs-cli configure --region us-west-2 --access-key ${env.awsAccess} --secret-key ${env.awsSecret} --cluster petclinic-cluster"
-          sh """ecs-cli ps | grep -m 1 dev | awk -F'RUNNING  |:' '{print \"DEV URL: http://\"\$2\"/petclinic\"}'"""
-          sh """ecs-cli ps | grep -m 1 qa | awk -F'RUNNING  |:' '{print \"QA URL: http://\"\$2\"/petclinic\"}'"""
-          sh """ecs-cli ps | grep -m 1 prod | awk -F'RUNNING  |:' '{print \"PROD URL: http://\"\$2\"/petclinic\"}'"""
+          sh "ecs-cli ps | grep -m 1 dev | awk -F'RUNNING  |:' '{print \"DEV URL: http://\"\$2\"/petclinic\"}'"
+          sh "ecs-cli ps | grep -m 1 qa | awk -F'RUNNING  |:' '{print \"QA URL: http://\"\$2\"/petclinic\"}'"
+          sh "ecs-cli ps | grep -m 1 prod | awk -F'RUNNING  |:' '{print \"PROD URL: http://\"\$2\"/petclinic\"}'"
           echo "To delete resources allocated run: ecs-cli down --force"
         }
       }
