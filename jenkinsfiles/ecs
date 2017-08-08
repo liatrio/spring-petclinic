@@ -1,5 +1,16 @@
 #!groovy
-// Assumes that there is an AWS EC2 key pair with the id ecs
+/*
+ *  Author:
+ *
+ *    Shane MacBride @shanemacbride <shanem@liatrio.com>
+ *
+ *  Requirements:
+ *
+ *    "DockerHub" Jenkins Credentials
+ *    "ECS"       Jenkins Credentials
+ *    "ecs"       AWS EC2 Keypair
+ *
+*/
 pipeline {
   agent none 
   stages {
