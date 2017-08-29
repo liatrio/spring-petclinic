@@ -20,6 +20,7 @@ pipeline {
                          containerVersion = getVersionFromContainer("liatrio/petclinic-tomcat:${env.BRANCH_NAME}")
                          failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)
                          sh "docker build -t liatrio/petclinic-tomcat:${containerVersion} ."
+                         sh "printenv"
                      }
                  }
              }
