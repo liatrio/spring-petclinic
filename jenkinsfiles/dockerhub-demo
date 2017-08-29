@@ -15,7 +15,7 @@ pipeline {
              agent any
              steps {
                  sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
-                 sh 'docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}'
+                 sh "docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
              }
        }
        stage('Build container with version') {
