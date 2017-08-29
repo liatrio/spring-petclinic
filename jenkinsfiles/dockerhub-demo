@@ -54,6 +54,10 @@ pipeline {
            agent any
            steps {
                 script {
+                env.each {
+                k,v ->
+                println k + " " + v
+                }
                     if ( env.BRANCH_NAME == 'master' )
                         sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
                     else sh "docker push liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
@@ -62,6 +66,9 @@ pipeline {
        }
    }
    post {
+        failure {
+
+        }
        always {
            slackSend (channel:"#petclinic", message: "${env.JOB_NAME} ${env.BUILD_RESULT} ${env.result} (<${env.BUILD_URL}|Open>)")
        }
