@@ -11,22 +11,27 @@ pipeline {
                    sh 'mvn clean install -DskipTests=true -B'
            }
        }
-       stage('Build with branchname and push') {
+       stage('Build container') {
              agent any
              steps {
-                 sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
-                 sh "docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
+                 script {
+                     sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
+                     if ( ${env.BRANCH_NAME} == 'master' ) {
+                         def containerVersion = getVersionFromContainer("liatrio/petclinic-tomcat:${env.BRANCH_NAME}")
+                         failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)
+                         sh "docker build -t liatrio/petclinic-tomcat:${containerVersion} ."
+                     }
+                 }
              }
        }
-       stage('Build container with version') {
-           when { branch 'master'}
+       stage('Push to dockerhub') {
            agent any
            steps {
                 script {
-                    def containerVersion = getVersionFromContainer("liatrio/petclinic-tomcat:${env.BRANCH_NAME}")
-                    failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)
-                    sh "docker build -t liatrio/petclinic-tomcat:${containerVersion} ."
-                    sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
+                    if ( ${env.BRANCH_NAME} == 'master' ) {
+                        sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
+                    }
+                    else sh "docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
                 }
            }
        }
