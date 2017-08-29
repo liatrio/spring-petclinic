@@ -15,7 +15,7 @@ pipeline {
              agent any
              steps {
                  sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
-                //  sh "docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
+                 sh "docker push  liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
              }
        }
        stage('Build container with version') {
@@ -24,9 +24,9 @@ pipeline {
            steps {
                 script {
                     def containerVersion = getVersionFromContainer("liatrio/petclinic-tomcat:${env.BRANCH_NAME}")
-                    // failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)
+                    failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)
                     sh "docker build -t liatrio/petclinic-tomcat:${containerVersion} ."
-                    // sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
+                    sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
                 }
            }
        }
