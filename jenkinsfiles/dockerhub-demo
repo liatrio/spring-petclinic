@@ -61,10 +61,10 @@ pipeline {
        }
    }
    post {
-    steps {
-        sh 'printenv'
-    }
        always {
+       steps {
+           sh 'printenv'
+       }
            slackSend (channel:"#petclinic", message: "started ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
        }
    }
