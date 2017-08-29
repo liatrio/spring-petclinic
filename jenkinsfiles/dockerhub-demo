@@ -66,9 +66,6 @@ pipeline {
        }
    }
    post {
-        failure {
-
-        }
        always {
            slackSend (channel:"#petclinic", message: "${env.JOB_NAME} ${env.BUILD_RESULT} ${env.result} (<${env.BUILD_URL}|Open>)")
        }
