@@ -53,8 +53,10 @@ pipeline {
        stage('Push to dockerhub') {
            agent any
            steps {
-           sh "${env.JOB_NAME}"
                 script {
+                    env.each {
+                      println it
+                    }
                     if ( env.BRANCH_NAME == 'master' )
                         sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
                     else sh "docker push liatrio/petclinic-tomcat:${env.BRANCH_NAME}"
