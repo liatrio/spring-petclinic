@@ -62,8 +62,8 @@ pipeline {
        }
    }
    post {
-       always {
-           slackSend (channel:"#petclinic", message: "${env.JOB_NAME} ${env.BUILD_RESULT} ${currentBuild.result} (<${env.BUILD_URL}|Open>)")
-       }
+        failure {
+            slackSend (channel:"#petclinic", color: "CF1318", message: "${env.JOB_NAME} Failed (<${env.BUILD_URL}|Open>)")
+        }
    }
 }
