@@ -6,8 +6,7 @@ pipeline {
     TAG = ""
     DEV = ""
     QA = ""
-    PROD_A = ""
-    PROD_B = ""
+    PROD = ""
   }
   stages {
     stage('Build') {
@@ -88,8 +87,7 @@ pipeline {
         stage('Deploy to dev') {
           agent any
           steps {
-            deployToEnvironment("${env.DEV}", 'dev', "${env.IMAGE}", "${env.TAG}")
-            //sh 'docker run --label "traefik.enable=true" --label "traefik.backend=dev-petclinic" --label "traefik.frontend.rule=Host:dev.petclinic.localhost" -d --network=${LDOP_NETWORK_NAME} --name dev-petclinic petclinic-tomcat'
+            deployToEnvironment("dev-petclinic.liatr.io", 'dev', "${env.IMAGE}", "${env.TAG}")
           }
         }
         stage('Smoke test dev') {
@@ -108,8 +106,7 @@ pipeline {
         stage('Deploy to qa') {
           agent any
           steps {
-            deployToEnvironment("${env.QA}", 'qa', "${env.IMAGE}", "${env.TAG}")
-            //sh 'docker run --label "traefik.enable=true" --label "traefik.backend=qa-petclinic" --label "traefik.frontend.rule=Host:qa.petclinic.localhost" -d --network=${LDOP_NETWORK_NAME} --name qa-petclinic petclinic-tomcat'
+            deployToEnvironment("qa-petclinic.liatr.io", 'qa', "${env.IMAGE}", "${env.TAG}")
           }
         }
         stage('Smoke test qa') {
@@ -129,8 +126,7 @@ pipeline {
         stage('Deploy to ProdA-Green') {
           agent any
           steps {
-            deployToEnvironment("${env.PROD_A}", 'proda', "${env.IMAGE}", "${env.TAG}")
-            //sh 'docker run --label "traefik.enable=true" --label "traefik.backend=prod-petclinic" --label "traefik.frontend.rule=Host:prod.petclinic.localhost" -d --network=${LDOP_NETWORK_NAME} --name proda-petclinic-green petclinic-tomcat'
+            deployToEnvironment("prod-petclinic.liatr.io", 'proda', "${env.IMAGE}", "${env.TAG}")
           }
         }
         stage('Smoke test ProdA-Green') {
@@ -155,8 +151,7 @@ pipeline {
         stage('Deploy to ProdB-Green') {
           agent any
           steps {
-            deployToEnvironment("${env.PROD_B}", 'prodb', "${env.IMAGE}", "${env.TAG}")
-            //sh 'docker run --label "traefik.enable=true" --label "traefik.backend=prod-petclinic" --label "traefik.frontend.rule=Host:prod.petclinic.localhost" -d --network=${LDOP_NETWORK_NAME} --name prodb-petclinic-green petclinic-tomcat'
+            deployToEnvironment("prod-petclinic.liatr.io", 'prodb', "${env.IMAGE}", "${env.TAG}")
           }
         }
         stage('Smoke test ProdB-Green') {
