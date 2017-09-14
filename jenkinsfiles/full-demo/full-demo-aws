@@ -2,11 +2,7 @@
 pipeline {
   agent none
   environment {
-    IMAGE = ""
-    TAG = ""
-    DEV = ""
-    QA = ""
-    PROD = ""
+    IMAGE = "liatrio/petclinic-tomcat"
   }
   stages {
     stage('Build') {
