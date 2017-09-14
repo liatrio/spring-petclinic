@@ -41,14 +41,10 @@ pipeline {
           sh 'mvn clean'
           script {
             pom = readMavenPom file: 'pom.xml'
-            if (params.version == 'UNSPECIFIED') {
-              getArtifact(pom.groupId, pom.artifactId, pom.version)
-              } else {
-                getArtifact(pom.groupId, pom.artifactId, params.VERSION)
-              }
-            }
+            getArtifact(pom.groupId, pom.artifactId, pom.version)
           }
         }
+      }
         stage('Build container') {
           agent any
           steps {
@@ -83,7 +79,7 @@ pipeline {
         stage('Deploy to dev') {
           agent any
           steps {
-            deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+            deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "1.0.0-SNAPSHOT", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
           }
         }
         stage('Smoke test dev') {
