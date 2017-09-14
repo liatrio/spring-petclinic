@@ -87,7 +87,7 @@ pipeline {
         stage('Deploy to dev') {
           agent any
           steps {
-            deployToEnvironment("dev-petclinic.liatr.io", 'dev', "${env.IMAGE}", "${env.TAG}")
+            deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
           }
         }
         stage('Smoke test dev') {
@@ -106,7 +106,7 @@ pipeline {
         stage('Deploy to qa') {
           agent any
           steps {
-            deployToEnvironment("qa-petclinic.liatr.io", 'qa', "${env.IMAGE}", "${env.TAG}")
+            deployToEnvironment("ec2-user", "qa-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "qa-petclinic.liatr.io/petclinic")
           }
         }
         stage('Smoke test qa') {
@@ -126,7 +126,7 @@ pipeline {
         stage('Deploy to ProdA-Green') {
           agent any
           steps {
-            deployToEnvironment("prod-petclinic.liatr.io", 'proda', "${env.IMAGE}", "${env.TAG}")
+            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
           }
         }
         stage('Smoke test ProdA-Green') {
@@ -151,7 +151,7 @@ pipeline {
         stage('Deploy to ProdB-Green') {
           agent any
           steps {
-            deployToEnvironment("prod-petclinic.liatr.io", 'prodb', "${env.IMAGE}", "${env.TAG}")
+            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
           }
         }
         stage('Smoke test ProdB-Green') {
