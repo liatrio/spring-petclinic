@@ -7,6 +7,12 @@
     width: 100%;
 }
 
+.footer {
+  position: absolute;
+  padding-top: 10px;
+  background-color: #c0ffee;
+}
+
 input[type="text"] {
     height: 25px;
 }
