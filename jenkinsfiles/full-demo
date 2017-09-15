@@ -103,7 +103,7 @@ pipeline {
           agent any
           steps {
             script {
-              if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
+              if ( env.BRANCH_NAME == 'master' ) {
                 deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io")
               }
               else{
