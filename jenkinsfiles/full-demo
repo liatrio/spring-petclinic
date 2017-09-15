@@ -85,7 +85,6 @@ pipeline {
             sh 'docker rm -f petclinic-tomcat-temp || true'
           }
         }
-        /*
         stage('Push to dockerhub') {
             agent any
             steps {
@@ -102,7 +101,6 @@ pipeline {
                 }
             }
         }
-        */
         stage('Deploy to dev') {
           agent any
           steps {
@@ -155,7 +153,7 @@ pipeline {
             input 'Deploy to Prod?'
           }
         }
-        stage('Deploy to ProdA-Green') {
+        stage('Deploy to Prod') {
           when {
             branch 'LDOP-302-full-demo'
           }
@@ -164,7 +162,7 @@ pipeline {
             deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "proda-petclinic-green", "petclinic.liatr.io", "petclinic-prod")
           }
         }
-        stage('Smoke test ProdA-Green') {
+        stage('Smoke test Prod') {
           when {
             branch 'LDOP-302-full-demo'
           }
@@ -176,51 +174,7 @@ pipeline {
           }
           steps {
             sh "cd regression-suite"
-            sh "mvn clean -B test -DPETCLINIC_URL=http://proda-petclinic-green:8080/petclinic/"
-          }
-        }
-        stage('Deploy to ProdA') {
-          when {
-            branch 'LDOP-302-full-demo'
-          }
-          agent any
-          steps {
-            sh 'docker rm -f proda-petclinic || true'
-            sh 'docker container rename proda-petclinic-green proda-petclinic'
-          }
-        }
-        stage('Deploy to ProdB-Green') {
-          when {
-            branch 'LDOP-302-full-demo'
-          }
-          agent any
-          steps {
-            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "prodb-petclinic-green", "petclinic.liatr.io", "petclinic-prod")
-          }
-        }
-        stage('Smoke test ProdB-Green') {
-          when {
-            branch 'LDOP-302-full-demo'
-          }
-          agent {
-            docker {
-              image 'maven:3.5.0'
-              args '--network=${LDOP_NETWORK_NAME}'
-            }
-          }
-          steps {
-            sh "cd regression-suite"
-            sh "mvn clean -B test -DPETCLINIC_URL=http://prodb-petclinic-green:8080/petclinic/"
-          }
-        }
-        stage('Deploy to ProdB') {
-          when {
-            branch 'LDOP-302-full-demo'
-          }
-          agent any
-          steps {
-            sh 'docker rm -f prodb-petclinic || true'
-            sh 'docker container rename prodb-petclinic-green prodb-petclinic'
+            sh "mvn clean -B test -DPETCLINIC_URL=http://petclinic.liatr.io/petclinic/"
           }
         }
       }
