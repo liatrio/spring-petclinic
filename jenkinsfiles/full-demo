@@ -50,11 +50,9 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
-                        if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
+                        if ( env.BRANCH_NAME == 'master' ) {
                             pom = readMavenPom file: 'pom.xml'
                             containerVersion = pom.version
-                            /*Need to check if version exists in the future*/
-                            /*failIfVersionExists("liatrio","petclinic-tomcat",containerVersion)*/
                             sh "docker build -t liatrio/petclinic-tomcat:${containerVersion} ."
                         }
                 }
@@ -91,7 +89,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]){
                     script {
                         sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
-                        if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
+                        if ( env.BRANCH_NAME == 'master' ) {
                             sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
                         }
                         else {
@@ -110,7 +108,7 @@ pipeline {
               }
               else{
                 deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH_NAME}", "spring-petclinic", "dev-petclinic.liatr.io")
-              } 
+              }
             }
           }
         }
@@ -123,13 +121,13 @@ pipeline {
           }
           steps {
             sh "cd regression-suite"
-            sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
-            echo "Should be accessible at http://localhost:18888/petclinic"
+            sh "mvn clean -B test -DPETCLINIC_URL=https://dev-petclinic.liatr.io/petclinic"
+            echo "Should be accessible at https://dev-petclinic.liatr.io/petclinic"
           }
         }
         stage('Deploy to qa') {
           when {
-            branch 'LDOP-302-full-demo'
+            branch 'master'
           }
           agent any
           steps {
@@ -138,7 +136,7 @@ pipeline {
         }
         stage('Smoke test qa') {
           when {
-            branch 'LDOP-302-full-demo'
+            branch 'master'
           }
           agent {
             docker {
@@ -148,23 +146,23 @@ pipeline {
           }
           steps {
             sh "cd regression-suite"
-            sh "mvn clean -B test -DPETCLINIC_URL=http://qa-petclinic:8080/petclinic/"
-            echo "Should be accessible at http://localhost:18889/petclinic"
+            sh "mvn clean -B test -DPETCLINIC_URL=https://qa-petclinic.liatr.io/petclinic"
+            echo "Should be accessible at https://qa-petclinic.liatr.io/petclinic"
             input 'Deploy to Prod?'
           }
         }
         stage('Deploy to Prod') {
           when {
-            branch 'LDOP-302-full-demo'
+            branch 'master'
           }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "proda-petclinic-green", "petclinic.liatr.io", "petclinic-prod")
+            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "prod-petclinic", "petclinic.liatr.io")
           }
         }
         stage('Smoke test Prod') {
           when {
-            branch 'LDOP-302-full-demo'
+            branch 'master'
           }
           agent {
             docker {
@@ -174,7 +172,7 @@ pipeline {
           }
           steps {
             sh "cd regression-suite"
-            sh "mvn clean -B test -DPETCLINIC_URL=http://petclinic.liatr.io/petclinic/"
+            sh "mvn clean -B test -DPETCLINIC_URL=https://petclinic.liatr.io/petclinic"
           }
         }
       }
