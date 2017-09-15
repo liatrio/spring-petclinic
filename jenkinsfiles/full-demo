@@ -104,7 +104,13 @@ pipeline {
         stage('Deploy to dev') {
           agent any
           steps {
-            deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "1.0.0-SNAPSHOT", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+            if ( env.BRANCH_NAME == 'master' ) {
+              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+            }
+            else{
+              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+            } 
+            
           }
         }
         stage('Smoke test dev') {
@@ -121,12 +127,18 @@ pipeline {
           }
         }
         stage('Deploy to qa') {
+          when {
+            branch 'master'
+          }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "qa-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "qa-petclinic.liatr.io/petclinic")
+              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
           }
         }
         stage('Smoke test qa') {
+          when {
+            branch 'master'
+          }
           agent {
             docker {
               image 'maven:3.5.0'
@@ -141,12 +153,18 @@ pipeline {
           }
         }
         stage('Deploy to ProdA-Green') {
+          when {
+            branch 'master'
+          }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
+            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
           }
         }
         stage('Smoke test ProdA-Green') {
+          when {
+            branch 'master'
+          }
           agent {
             docker {
               image 'maven:3.5.0'
@@ -159,6 +177,9 @@ pipeline {
           }
         }
         stage('Deploy to ProdA') {
+          when {
+            branch 'master'
+          }
           agent any
           steps {
             sh 'docker rm -f proda-petclinic || true'
@@ -166,12 +187,18 @@ pipeline {
           }
         }
         stage('Deploy to ProdB-Green') {
+          when {
+            branch 'master'
+          }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.TAG}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
+            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "prod-petclinic.liatr.io/petclinic", "petclinic-prod")
           }
         }
         stage('Smoke test ProdB-Green') {
+          when {
+            branch 'master'
+          }
           agent {
             docker {
               image 'maven:3.5.0'
@@ -184,6 +211,9 @@ pipeline {
           }
         }
         stage('Deploy to ProdB') {
+          when {
+            branch 'master'
+          }
           agent any
           steps {
             sh 'docker rm -f prodb-petclinic || true'
