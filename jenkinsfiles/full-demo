@@ -133,7 +133,7 @@ pipeline {
           }
           agent any
           steps {
-              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io")
+              deployToEnvironment("ec2-user", "qa-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io")
           }
         }
         stage('Smoke test qa') {
