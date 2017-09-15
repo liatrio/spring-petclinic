@@ -159,7 +159,7 @@ pipeline {
           }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "prod-petclinic.liatr.io", "petclinic-prod")
+            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "petclinic.liatr.io", "petclinic-prod")
           }
         }
         stage('Smoke test ProdA-Green') {
@@ -193,7 +193,7 @@ pipeline {
           }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "prod-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "prod-petclinic.liatr.io", "petclinic-prod")
+            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "petclinic.liatr.io", "petclinic-prod")
           }
         }
         stage('Smoke test ProdB-Green') {
