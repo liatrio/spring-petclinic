@@ -109,7 +109,7 @@ pipeline {
                 deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
               }
               else{
-                deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+                deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH_NAME}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
               } 
             }
           }
