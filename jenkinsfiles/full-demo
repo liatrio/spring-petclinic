@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     sh "docker build -t liatrio/petclinic-tomcat:${env.BRANCH_NAME} ."
-                        if ( env.BRANCH_NAME == 'master' ) {
+                        if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
                             pom = readMavenPom file: 'pom.xml'
                             containerVersion = pom.version
                             /*Need to check if version exists in the future*/
@@ -85,13 +85,14 @@ pipeline {
             sh 'docker rm -f petclinic-tomcat-temp || true'
           }
         }
+        /*
         stage('Push to dockerhub') {
             agent any
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerPassword', usernameVariable: 'dockerUsername')]){
                     script {
                         sh "docker login -u ${env.dockerUsername} -p ${env.dockerPassword}"
-                        if ( env.BRANCH_NAME == 'master' ) {
+                        if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
                             sh "docker push liatrio/petclinic-tomcat:${containerVersion}"
                         }
                         else {
@@ -101,11 +102,12 @@ pipeline {
                 }
             }
         }
+        */
         stage('Deploy to dev') {
           agent any
           steps {
             script {
-              if ( env.BRANCH_NAME == 'master' ) {
+              if ( env.BRANCH_NAME == 'LDOP-302-full-demo' ) {
                 deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io")
               }
               else{
@@ -129,7 +131,7 @@ pipeline {
         }
         stage('Deploy to qa') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent any
           steps {
@@ -138,7 +140,7 @@ pipeline {
         }
         stage('Smoke test qa') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent {
             docker {
@@ -155,16 +157,16 @@ pipeline {
         }
         stage('Deploy to ProdA-Green') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "petclinic.liatr.io", "petclinic-prod")
+            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "proda-petclinic-green", "petclinic.liatr.io", "petclinic-prod")
           }
         }
         stage('Smoke test ProdA-Green') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent {
             docker {
@@ -179,7 +181,7 @@ pipeline {
         }
         stage('Deploy to ProdA') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent any
           steps {
@@ -189,16 +191,16 @@ pipeline {
         }
         stage('Deploy to ProdB-Green') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent any
           steps {
-            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "petclinic.liatr.io", "petclinic-prod")
+            deployToEnvironment("ec2-user", "petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "prodb-petclinic-green", "petclinic.liatr.io", "petclinic-prod")
           }
         }
         stage('Smoke test ProdB-Green') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent {
             docker {
@@ -213,7 +215,7 @@ pipeline {
         }
         stage('Deploy to ProdB') {
           when {
-            branch 'master'
+            branch 'LDOP-302-full-demo'
           }
           agent any
           steps {
