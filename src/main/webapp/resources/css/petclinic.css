@@ -18,7 +18,7 @@ input[type="text"] {
 }
 
 .navbar .nav > li > a {
-    color: #000000;
+    color: red;
 }
 
 .form-horizontal .control-label {
