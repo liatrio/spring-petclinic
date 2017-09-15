@@ -104,13 +104,14 @@ pipeline {
         stage('Deploy to dev') {
           agent any
           steps {
-            if ( env.BRANCH_NAME == 'master' ) {
-              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+            script {
+              if ( env.BRANCH_NAME == 'master' ) {
+                deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${containerVersion}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+              }
+              else{
+                deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
+              } 
             }
-            else{
-              deployToEnvironment("ec2-user", "dev-petclinic.liatr.io", "petclinic-deploy-key", "${env.IMAGE}", "${env.BRANCH}", "spring-petclinic", "dev-petclinic.liatr.io/petclinic")
-            } 
-            
           }
         }
         stage('Smoke test dev') {
