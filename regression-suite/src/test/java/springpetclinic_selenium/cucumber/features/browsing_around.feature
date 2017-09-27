@@ -7,7 +7,7 @@ Feature: Browsing around
   Scenario: Vets
     Given I am on the home page
     And I follow "/vets.html"
-    Then I should be on the vets, "Veterinarians", page
+    Then I should be on the vets, "Vets", page
     And I should see "Vets" within h2
 
   Scenario: Owners
