@@ -28,6 +28,7 @@
         <assertj.version>2.2.0</assertj.version>
 
         <!-- Dates -->
+	<jodatime.version>2.10.2-SNAPSHOT</jodatime.version>
         <jodatime-hibernate.version>1.4</jodatime-hibernate.version>
         <jodatime-jsptags.version>1.1.1</jodatime-jsptags.version>
         <jadira-usertype-core.version>3.2.0.GA</jadira-usertype-core.version>
@@ -47,7 +48,7 @@
     </properties>
 
     <scm>
-        <developerConnection>scm:git:https://github.com/liatrio/spring-petclinic/</developerConnection>
+        <developerConnection>scm:git:https://github.com/findtopher/spring-petclinic/</developerConnection>
         <tag>spring-petclinic-1.0.0</tag>
     </scm>
 
@@ -176,8 +177,9 @@
 
         <!-- Date and Time -->
         <dependency>
-            <groupId>joda-time</groupId>
+            <groupId>joda-time-fork</groupId>
             <artifactId>joda-time</artifactId>
+	    <version>${jodatime.version}</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -429,6 +431,14 @@
             <url>http://localhost:8081/nexus/content/repositories/releases</url>
         </repository>
     </distributionManagement>
+
+    <repositories>
+      <repository>
+	<id>liatrio-interview-nexus</id>
+	<name>liatrio-interview-nexus</name>
+	<url>http://liatrio.findtopher.com/content/repositories/snapshots/</url>
+      </repository>
+    </repositories>
 
     <url>demopetclinic</url>
 </project>
