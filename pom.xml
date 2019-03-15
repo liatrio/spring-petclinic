@@ -436,7 +436,7 @@
       <repository>
 	<id>liatrio-interview-nexus</id>
 	<name>liatrio-interview-nexus</name>
-	<url>http://liatrio.findtopher.com/content/repositories/snapshots/</url>
+	<url>http://liatrio.findtopher.com:8081/nexus/content/repositories/snapshots</url>
       </repository>
     </repositories>
 
