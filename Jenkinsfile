@@ -104,7 +104,7 @@ pipeline {
         }
       }
     }
-    
+
     stage('Deploy to dev') {
       when {
         branch 'master'
