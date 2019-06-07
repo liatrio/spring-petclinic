@@ -112,5 +112,13 @@ pipeline {
                 sh "sleep ${sleeplength}"
             }
         }
+
+        stage('Smoke Test Prod') {
+            agent any
+            steps {
+                //sample dummy step
+                sh "sleep ${sleeplength}"
+            }
+        }
     }
 }
