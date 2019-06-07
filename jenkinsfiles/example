@@ -61,7 +61,14 @@ pipeline {
             agent any
             steps {
                 //Don't want to do this for the demo, so I can actually show it working.
-                //sh 'docker rm -f petclinic-tomcat-temp || true'
+                //
+
+                if ( env.BRANCH_NAME == 'master' ) {
+                    sh 'docker rm -f petclinic-tomcat-temp || true'
+                } else {
+                    sh 'Container available for testing!'
+                }
+
             }
         }
 
