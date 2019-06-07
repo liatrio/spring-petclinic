@@ -64,7 +64,7 @@ pipeline {
                     if (env.BRANCH_NAME == 'master') {
                         sh 'docker rm -f petclinic-tomcat-temp || true'
                     } else {
-                        sh 'Container available for testing!'
+                        echo 'Container available for testing!'
                     }
                 }
             }
