@@ -1,6 +1,6 @@
 #!/bin/env groovy
 
-def sleeplength = 1
+def sleeplength = 0
 
 pipeline {
     agent none
@@ -60,8 +60,8 @@ pipeline {
         stage('Remove Local Container') {
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                //Don't want to do this for the demo, so I can actually show it working.
+                //sh 'docker rm -f petclinic-tomcat-temp || true'
             }
         }
 
