@@ -66,6 +66,7 @@ pipeline {
             agent any
             steps {
                 //sh 'docker rm -f petclinic-tomcat-temp || true'
+                sh "sleep ${sleeplength}"
             }
         }
 
