@@ -82,7 +82,7 @@ pipeline {
                 sh 'aws ecr get-login --no-include-email --region us-east-1 --registry-ids 060299086407 | sh'
 
                 //Make sure that I have a repository for petclinic
-                sh "aws cloudformation deploy --stack-name PetClinicECR --template-file CloudFormations/petclinic-ECR.yaml --parameter-overrides imageName=${image} || true"
+                sh "aws cloudformation deploy --stack-name PetClinicECR --template-file CloudFormations/petclinic-ECR.yaml --parameter-overrides ImageName=${image} || true"
 
                 //Tag and Push to Jonathan's ECR
                 sh "docker tag ${image}:${TAG} 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
