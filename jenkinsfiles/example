@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     //Find just the image name.
-                    image_with_registry = ${env.IMAGE}
+                    image_with_registry = "${env.IMAGE}"
                     image = image_with_registry.substring(image_with_registry.lastIndexOf('/') + 1, image_with_registry.length())
 
                     //Find the tag.
