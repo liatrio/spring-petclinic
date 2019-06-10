@@ -1,11 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: petclinic-service
+  name: petclinic-service-{{ .Values.environment }}
 spec:
   selector:
     app: petclinic
     env: {{ .Values.environment }}
   ports:
   - protocol: TCP
-    port: 8080
+    port: 80
+    targetPort: 8080

@@ -17,8 +17,8 @@ spec:
         env: {{ .Values.environment }}
     spec:
       containers:
-        - name: {{ .Values.environment }}-petclinic
-          image: 060299086407.dkr.ecr.us-east-1.amazonaws.com/petclinic:{{ .Values.imagetag }}
+        - name: petclinic
+          image: 060299086407.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.image }}:{{ .Values.imagetag }}
           imagePullPolicy: Always
           ports:
-            - containerPort: 9966
+            - containerPort: 8080

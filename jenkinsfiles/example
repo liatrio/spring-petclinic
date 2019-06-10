@@ -65,13 +65,7 @@ pipeline {
         stage('Remove Local Container') {
             agent any
             steps {
-                script {
-                    if (env.BRANCH_NAME == 'master') {
-                        sh 'docker rm -f petclinic-tomcat-temp || true'
-                    } else {
-                        echo 'Container available for testing!'
-                    }
-                }
+                //sh 'docker rm -f petclinic-tomcat-temp || true'
             }
         }
 
@@ -93,8 +87,19 @@ pipeline {
         stage('Deploy to Dev') {
             agent any
             steps{
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                script{
+                    //This will deploy to a development environment no matter what.  If it's on the master branch it will label the envrionment dev, otherwise it will be the branch name.
+                    if ( env.BRANCH_NAME == 'master' ) {
+                        enviro = "dev"
+                    } else {
+                        enviro = env.BRANCH_NAME
+                    }
+                    sh "helm upgrade -i petclinic-${enviro}-helm ./helm --set environment=${enviro},image=${image},imagetag=${tag}"
+                }
+
+
+
+
             }
 
         }

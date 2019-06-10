@@ -1,4 +1,4 @@
-name: lthoi
-description: the deployment for LTHOI
+name: petclinic
+description: Petclinic App
 version: 1.0.0
 appVersion: latest
