@@ -1,9 +1,6 @@
 #!/bin/env groovy
 
 def sleeplength = 0
-def TAG = ""
-def image_with_registry = ${env.IMAGE}
-def image = image_with_registry.substring(image_with_registry.lastIndexOf('/') + 1, image_with_registry.length())
 
 pipeline {
     agent none
@@ -33,6 +30,11 @@ pipeline {
             agent any
             steps {
                 script {
+                    //Find just the image name.
+                    image_with_registry = ${env.IMAGE}
+                    image = image_with_registry.substring(image_with_registry.lastIndexOf('/') + 1, image_with_registry.length())
+
+                    //Find the tag.
                     if ( env.BRANCH_NAME == 'master' ) {
                         pom = readMavenPom file: 'pom.xml'
                         TAG = pom.version
