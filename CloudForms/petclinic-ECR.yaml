@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "The resources for doing the Docker Builds."
+
+
+Resources:
+  PetClinicRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      LifecyclePolicy:
+        LifecyclePolicyText: '{ "rules": [ { "rulePriority": 10, "description": "Delete", "selection": { "tagStatus": "any", "countType": "imageCountMoreThan", "countNumber": 1 }, "action": { "type": "expire" } } ] }'
+      RepositoryName: petclinic

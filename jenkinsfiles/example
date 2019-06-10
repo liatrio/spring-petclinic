@@ -1,6 +1,7 @@
 #!/bin/env groovy
 
 def sleeplength = 0
+def imagetag = ""
 
 pipeline {
     agent none
@@ -73,8 +74,15 @@ pipeline {
         stage('Push to Registry') {
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                //Login to AWS ECR
+                sh 'aws ecr get-login --no-include-email --region us-east-1 --registry-ids 060299086407 | sh'
+
+                //Make sure that I have a repository for petclinic
+                sh "aws cloudformation deploy --stack-name PetClinicECR --template-file CloudForms/petclinc-ECR.yaml || true"
+
+                //Tag and Push to Jonathan's ECR
+                sh "docker tag ${env.IMAGE}:${TAG} 060299086407.dkr.ecr.us-east-1.amazonaws.com/${env.IMAGE}:${TAG}"
+                sh "docker push 060299086407.dkr.ecr.us-east-1.amazonaws.com/${env.IMAGE}:${TAG}"
             }
         }
 

@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: petclinic-service
+spec:
+  selector:
+    app: petclinic
+    env: {{ .Values.environment }}
+  ports:
+  - protocol: TCP
+    port: 9966
