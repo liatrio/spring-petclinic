@@ -8,4 +8,4 @@ spec:
     env: {{ .Values.environment }}
   ports:
   - protocol: TCP
-    port: 9966
+    port: 8080

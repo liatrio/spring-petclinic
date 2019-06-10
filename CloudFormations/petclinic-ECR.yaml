@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "The resources for doing the Docker Builds."
 
+Parameters:
+  ImageName:
+    Type: String
+    Default: UNSPECIFIED
+    Description: "Specify the image name so that we can be sure we have an ECR for it."
 
 Resources:
   PetClinicRepo:
@@ -8,4 +13,4 @@ Resources:
     Properties:
       LifecyclePolicy:
         LifecyclePolicyText: '{ "rules": [ { "rulePriority": 10, "description": "Delete", "selection": { "tagStatus": "any", "countType": "imageCountMoreThan", "countNumber": 1 }, "action": { "type": "expire" } } ] }'
-      RepositoryName: petclinic
+      RepositoryName: !Ref ImageName
