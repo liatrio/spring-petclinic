@@ -1,7 +1,9 @@
 #!/bin/env groovy
 
 def sleeplength = 0
-def imagetag = ""
+def TAG = ""
+def image_with_registry = ${env.IMAGE}
+def image = image_with_registry.substring(image_with_registry.lastIndexOf('/') + 1, image_with_registry.length())
 
 pipeline {
     agent none
@@ -37,7 +39,7 @@ pipeline {
                     } else {
                         TAG = env.BRANCH_NAME
                     }
-                    sh "docker build -t ${env.IMAGE}:${TAG} ."
+                    sh "docker build -t ${image}:${TAG} ."
                 }
             }
         }
@@ -46,7 +48,7 @@ pipeline {
             agent any
             steps {
                 sh 'docker rm -f petclinic-tomcat-temp || true'
-                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${image}:${TAG}"
             }
         }
 
@@ -78,12 +80,30 @@ pipeline {
                 sh 'aws ecr get-login --no-include-email --region us-east-1 --registry-ids 060299086407 | sh'
 
                 //Make sure that I have a repository for petclinic
-                sh "aws cloudformation deploy --stack-name PetClinicECR --template-file CloudFormations/petclinic-ECR.yaml --parameter-overrides imageName=${env.IMAGE} || true"
+                sh "aws cloudformation deploy --stack-name PetClinicECR --template-file CloudFormations/petclinic-ECR.yaml --parameter-overrides imageName=${image} || true"
 
                 //Tag and Push to Jonathan's ECR
-                sh "docker tag ${env.IMAGE}:${TAG} 060299086407.dkr.ecr.us-east-1.amazonaws.com/${env.IMAGE}:${TAG}"
-                sh "docker push 060299086407.dkr.ecr.us-east-1.amazonaws.com/${env.IMAGE}:${TAG}"
+                sh "docker tag ${image}:${TAG} 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
+                sh "docker push 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
             }
+        }
+
+        stage('Deploy to Dev') {
+            agent any
+            steps{
+                //sample dummy step
+                sh "sleep ${sleeplength}"
+            }
+
+        }
+
+        stage('Smoke Test Dev') {
+            agent any
+            steps{
+                //sample dummy step
+                sh "sleep ${sleeplength}"
+            }
+
         }
 
         stage('Scan Container') {
