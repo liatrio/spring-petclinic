@@ -3,13 +3,13 @@ Feature: Browsing around
   Scenario: The home page
     Given I am on the home page
     Then I should see "PetClinic"
-
+  @regression
   Scenario: Vets
     Given I am on the home page
     And I follow "/vets.html"
     Then I should be on the vets, "Vets", page
     And I should see "Vets" within h2
-
+  @regression
   Scenario: Owners
     Given I am on the home page
     And I follow "/owners/find.html"
