@@ -81,7 +81,7 @@ pipeline {
 
                 //Tag and Push to Jonathan's ECR
                 sh "docker tag ${image}:${TAG} 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
-                sh "docker push 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
+                //sh "docker push 060299086407.dkr.ecr.us-east-1.amazonaws.com/${image}:${TAG}"
             }
         }
 

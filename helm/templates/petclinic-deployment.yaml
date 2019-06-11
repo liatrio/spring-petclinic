@@ -6,7 +6,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: petclinc
+      app: petclinic
       env: {{ .Values.environment }}
   strategy:
     type: Recreate
