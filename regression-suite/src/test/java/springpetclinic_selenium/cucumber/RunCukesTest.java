@@ -6,8 +6,9 @@ import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
 // Associates Cucumber-JVM with the JUnit runner
 @RunWith(Cucumber.class)
-@CucumberOptions( 
+@CucumberOptions(
 		format = {"pretty", "html:target/cucumber-html-report", "json:target/cucumber-json-report.json"},
-		features = "src/test/java/springpetclinic_selenium/cucumber/features")
+		features = "src/test/java/springpetclinic_selenium/cucumber/features"
+        tags = {"~@ignore"})
 public class RunCukesTest {
 }

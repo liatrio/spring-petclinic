@@ -1,3 +1,4 @@
+@ignore
 Feature: Adding a Pet Owner
  
 	Scenario: Adding a Pet Owner the Petclinic project.
