@@ -108,9 +108,6 @@ pipeline {
         }
 
         stage('Scan Container') {
-            when {
-                branch 'master'
-            }
             agent any
             steps {
                 //sample dummy step
