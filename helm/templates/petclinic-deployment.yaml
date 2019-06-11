@@ -2,19 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: petclinic-deployment
+  namespace: petclinic-{{ .Values.environment }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: petclinic
-      env: {{ .Values.environment }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: petclinic
-        env: {{ .Values.environment }}
     spec:
       containers:
         - name: petclinic

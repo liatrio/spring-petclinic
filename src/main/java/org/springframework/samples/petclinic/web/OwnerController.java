@@ -55,7 +55,7 @@ public class OwnerController {
         dataBinder.setDisallowedFields("id");
     }
 
-    @RequestMapping(value = "/owners/new", method = RequestMethod.GET)
+    @RequestMapping(value = "/*/owners/new", method = RequestMethod.GET)
     public String initCreationForm(Map<String, Object> model) {
         Owner owner = new Owner();
         model.put("owner", owner);

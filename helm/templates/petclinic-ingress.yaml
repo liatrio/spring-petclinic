@@ -1,14 +1,15 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: petclinic-ingress-{{ .Values.environment }}
+  name: petclinic-ingress
+  namespace: petclinic-{{ .Values.environment }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
   - http:
       paths:
-      - path: /{{ .Values.environment }}/petclinic
+      - path: /petclinic
         backend:
-          serviceName: petclinic-service-{{ .Values.environment }}
+          serviceName: petclinic-service
           servicePort: 80
