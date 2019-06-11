@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		format = {"pretty", "html:target/cucumber-html-report", "json:target/cucumber-json-report.json"},
-		features = "src/test/java/springpetclinic_selenium/cucumber/features",
-        tags = {"~@ignore"})
+		features = "src/test/java/springpetclinic_selenium/cucumber/features")
 public class RunCukesTest {
 }
