@@ -103,8 +103,7 @@ pipeline {
         stage('Smoke Test Dev') {
             agent any
             steps{
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @smoke\" -DPETCLINIC_URL=http://${enviro}.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
             }
 
         }
