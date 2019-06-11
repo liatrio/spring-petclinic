@@ -89,15 +89,12 @@ pipeline {
             agent any
             steps{
                 script{
-                    //ADD THIS BACK IN IF I FIND A WAY TO UNIVERSALLY CHANGE THE URL
-                    /*
                     //This will deploy to a development environment no matter what.  If it's on the master branch it will label the envrionment dev, otherwise it will be the branch name.
                     if ( env.BRANCH_NAME == 'master' ) {
                         enviro = "dev"
                     } else {
                         enviro = env.BRANCH_NAME
                     }
-                    */
                     sh "helm upgrade -i petclinic-${enviro}-helm ./helm --set environment=${enviro},image=${image},imagetag=${TAG}"
                 }
             }
