@@ -57,7 +57,7 @@
 
     <servlet-mapping>
         <servlet-name>petclinic</servlet-name>
-        <url-pattern>*petclinic</url-pattern>
+        <url-pattern>*</url-pattern>
     </servlet-mapping>
 
     <!-- Dandelion servlet definition and mapping -->
