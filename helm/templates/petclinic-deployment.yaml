@@ -1,22 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: petclinic-deployment
-  namespace: petclinic-{{ .Values.environment }}
+  name: petclinic-deployment-{{ .Values.environment }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: petclinic
+      app: petclinic-{{ .Values.environment }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: petclinic
+        app: petclinic-{{ .Values.environment }}
     spec:
       containers:
-        - name: petclinic
+        - name: petclinic-{{ .Values.environment }}
           image: 060299086407.dkr.ecr.us-east-1.amazonaws.com/{{ .Values.image }}:{{ .Values.imagetag }}
           imagePullPolicy: Always
           ports:

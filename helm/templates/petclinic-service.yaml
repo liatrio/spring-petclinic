@@ -1,11 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: petclinic-service
-  namespace: petclinic-{{ .Values.environment }}
+  name: petclinic-service-{{ .Values.environment }}
 spec:
   selector:
-    app: petclinic
+    app: petclinic-{{ .Values.environment }}
   ports:
   - protocol: TCP
     port: 80

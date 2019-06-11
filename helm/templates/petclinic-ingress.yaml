@@ -12,5 +12,5 @@ spec:
       paths:
       - path: /petclinic
         backend:
-          serviceName: petclinic-service
+          serviceName: petclinic-service-{{ .Values.environment }}
           servicePort: 80
