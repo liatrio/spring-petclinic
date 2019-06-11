@@ -7,7 +7,7 @@ metadata:
 spec:
   rules:
   - http:
-      host: {{ .Values.environment }}.*
+      host: {{ .Values.environment }}.a910146643c8611e98dfe0a264e7ebfa-575602821.us-east-1.elb.amazonaws.com
       paths:
 #      - path: /{{ .Values.environment }}/petclinic
       -path: /petclinic
