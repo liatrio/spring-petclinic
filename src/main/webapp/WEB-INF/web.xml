@@ -57,7 +57,7 @@
 
     <servlet-mapping>
         <servlet-name>petclinic</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*/</url-pattern>
     </servlet-mapping>
 
     <!-- Dandelion servlet definition and mapping -->
@@ -111,8 +111,8 @@
     </filter-mapping>
 
     <!--  	No need for welcome-file declaration here.
-    		See inside spring/mvc-core-config.xml : 
-    		<mvc:view-controller path="/" view-name="welcome" /> 
+    		See inside spring/mvc-core-config.xml :
+    		<mvc:view-controller path="/" view-name="welcome" />
     -->
 
 </web-app>

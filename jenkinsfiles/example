@@ -97,10 +97,6 @@ pipeline {
                     }
                     sh "helm upgrade -i petclinic-${enviro}-helm ./helm --set environment=${enviro},image=${image},imagetag=${TAG}"
                 }
-
-
-
-
             }
 
         }
