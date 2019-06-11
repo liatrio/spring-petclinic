@@ -7,8 +7,10 @@ metadata:
 spec:
   rules:
   - http:
+      host: {{ .Values.environment }}.*
       paths:
-      - path: /{{ .Values.environment }}/petclinic
+#      - path: /{{ .Values.environment }}/petclinic
+      -path: /petclinic
         backend:
           serviceName: petclinic-service-{{ .Values.environment }}
           servicePort: 80
