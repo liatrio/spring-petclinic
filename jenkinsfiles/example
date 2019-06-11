@@ -105,10 +105,12 @@ pipeline {
             steps{
                 sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @smoke\" -DPETCLINIC_URL=http://${enviro}.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
             }
-
         }
 
         stage('Scan Container') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
                 //sample dummy step
@@ -117,42 +119,52 @@ pipeline {
         }
 
         stage('Deploy to QA') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "helm upgrade -i petclinic-test-helm ./helm --set environment=test,image=${image},imagetag=${TAG}"
             }
         }
 
         stage('Smoke Test QA') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @smoke\" -DPETCLINIC_URL=http://test.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
             }
         }
 
         stage('Run Test Suite') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @regression\" -DPETCLINIC_URL=http://test.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
             }
         }
 
         stage('Deploy to Prod') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "helm upgrade -i petclinic-prod-helm ./helm --set environment=prod,image=${image},imagetag=${TAG}"
             }
         }
 
         stage('Smoke Test Prod') {
+            when {
+                branch 'master'
+            }
             agent any
             steps {
-                //sample dummy step
-                sh "sleep ${sleeplength}"
+                sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @smoke\" -DPETCLINIC_URL=http://prod.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
             }
         }
     }
