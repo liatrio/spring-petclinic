@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-  - host: {{ .Values.environment }}.temp.jonathancavell.org
+  - host: {{ .Values.environment }}.temp.jonathancavell.com
   - http:
       paths:
       - path: /petclinic
