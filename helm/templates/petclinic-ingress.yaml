@@ -1,8 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: petclinic-ingress
-  namespace: petclinic-{{ .Values.environment }}
+  name: petclinic-ingress-{{ .Values.environment }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
