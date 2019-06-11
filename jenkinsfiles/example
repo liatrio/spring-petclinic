@@ -57,7 +57,7 @@ pipeline {
         stage('Smoke Test Local') {
             agent any
             steps {
-                sh "cd regression-suite && mvn clean -B test -Dcucumber.options='--tags @smoke' -DPETCLINIC_URL=http://localhost:9966/petclinic/"
+                sh "cd regression-suite && mvn  test -Dcucumber.options='--tags @smoke' -DPETCLINIC_URL=http://localhost:9966/petclinic/"
             }
         }
 
