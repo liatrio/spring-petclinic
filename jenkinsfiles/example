@@ -145,6 +145,16 @@ pipeline {
             }
         }
 
+        stage('Run Test Suite') {
+            when {
+                branch 'master'
+            }
+            agent any
+            steps {
+                sh "cd regression-suite && mvn test -Dcucumber.options=\"--tags @performance\" -DPETCLINIC_URL=http://test.liatrio.jonathancavell.com/petclinic/ -Dtest=\"RunCukesTest**\""
+            }
+        }
+
         stage('Deploy to Prod') {
             when {
                 branch 'master'
