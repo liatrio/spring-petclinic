@@ -1,0 +1,21 @@
+minion:
+  {%- if pillar.get('artifactory', {}).get('client') %}
+  artifactory:
+    {%- from "artifactory/map.jinja" import client with context %}
+    artifactory:
+      host: {{ client.server.host }}
+      port: {{ client.server.port }}
+      proto: {{ client.server.proto|default('http') }}
+      ssl_verify: {{ client.server.ssl_verify|default(True) }}
+      {%- if client.server.user is defined %}
+      user: {{ client.server.user }}
+      password: {{ client.server.password }}
+      {%- endif %}
+      {%- if client.server.license_key is defined %}
+      license_key: {{ client.server.license_key }}
+      ldap_server: {{ client.server.ldap_server }}
+      ldap_account_base: {{ client.server.ldap_account_base }}
+      ldap_searchFilter: {{ client.server.ldap_searchFilter }}
+      {%- endif %}
+
+  {%- endif %}

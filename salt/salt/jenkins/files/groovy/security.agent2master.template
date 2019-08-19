@@ -1,0 +1,62 @@
+#!groovy
+import jenkins.model.Jenkins
+import jenkins.security.s2m.*
+
+Boolean enabled = "${enabled}".toBoolean()
+
+String newWhitelistedContent="""\
+${newWhitelistedContent}"""
+
+String newFilePathRulesContent="""\
+${newFilePathRulesContent}"""
+
+Boolean changed = false
+
+/*
+ * MasterKillSwitch has reversed logic
+ * `true` means `disabled` and vise versa
+ */
+
+def instance = Jenkins.getInstance()
+def whitelistRule = instance.injector.getInstance(AdminWhitelistRule.class)
+Boolean s2mState = !whitelistRule.getMasterKillSwitch() //reversed logic. `true` means disabled
+
+if ( s2mState != enabled ) {
+    whitelistRule.setMasterKillSwitch(!enabled)
+    changed = true
+}
+
+File whitelistedFile = new File(whitelistRule.whitelisted.toString())
+File filePathRulesFile = new File(whitelistRule.filePathRules.toString())
+
+if (!whitelistedFile.exists()) {
+    whitelistRule.whitelisted.set("\n")
+}
+
+if (!filePathRulesFile.exists()) {
+    filePathRulesFile.createNewFile()
+}
+
+String whitelistedContent = whitelistedFile.getText('UTF-8')
+String filePathRulesContent = filePathRulesFile.getText('UTF-8')
+
+if (!newWhitelistedContent.endsWith("\n")) {
+     newWhitelistedContent+="\n"
+}
+
+if (newWhitelistedContent != whitelistedContent) {
+    whitelistRule.whitelisted.set(newWhitelistedContent);
+    changed = true
+}
+
+if (newFilePathRulesContent != filePathRulesContent) {
+    whitelistRule.filePathRules.parseTest(newFilePathRulesContent)
+    whitelistRule.filePathRules.set(newFilePathRulesContent);
+    changed = true
+}
+
+if (changed) {
+    print "CHANGED"
+} else {
+    print "EXISTS"
+}

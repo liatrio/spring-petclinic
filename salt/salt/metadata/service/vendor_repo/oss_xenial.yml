@@ -1,0 +1,8 @@
+parameters:
+  linux:
+    system:
+      repo:
+        artifactory:
+          enabled: true
+          source: 'deb https://jfrog.bintray.com/artifactory-debs xenial main'
+          key_url: 'https://bintray.com/user/downloadSubjectPublicKey?username=jfrog'

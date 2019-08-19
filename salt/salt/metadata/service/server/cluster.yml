@@ -1,0 +1,10 @@
+applications:
+- artifactory
+classes:
+- service.artifactory.support
+parameters:
+  artifactory:
+    server:
+      enabled: true
+      bind:
+        address: 0.0.0.0

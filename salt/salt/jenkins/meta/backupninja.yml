@@ -1,0 +1,6 @@
+{%- from "jenkins/map.jinja" import master with context -%}
+backup:
+  jenkins:
+    fs_includes:
+    - {{ master.home }}
+    fs_excludes: []

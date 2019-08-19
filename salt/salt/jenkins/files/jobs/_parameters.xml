@@ -1,0 +1,43 @@
+{%- if job.param is defined %}
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        {%- for param_name, param in job.param.iteritems() %}
+        <hudson.model.{{ param.get('type', 'string')|capitalize }}ParameterDefinition>
+          <name>{{ param_name }}</name>
+          {%- if param.description is defined %}
+          <description>{{ param.description }}</description>
+          {%- else %}
+          <description/>
+          {%- endif %}
+          {%- if param.get('type', 'string')|lower == "choice" %}
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              {%- for choice in param.choices %}
+              <string>{{ choice|e }}</string>
+              {%- endfor %}
+            </a>
+          </choices>
+          {%- endif %}
+          {%- if param.default is defined and param.default != '' %}
+          <defaultValue>{{ param.get('default') }}</defaultValue>
+          {%- else %}
+          <defaultValue/>
+          {%- endif %}
+        </hudson.model.{{ param.get('type', 'string')|capitalize }}ParameterDefinition>
+        {%- endfor %}
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    {%- if job.discard is defined %}
+     <jenkins.model.BuildDiscarderProperty>
+          <strategy class="hudson.tasks.LogRotator">
+            <daysToKeep>{{ job.discard.get('build',{}).get('keep_days',-1) }}</daysToKeep>
+            <numToKeep>{{ job.discard.get('build',{}).get('keep_num',-1) }}</numToKeep>
+            <artifactDaysToKeep>{{ job.discard.get('artifact',{}).get('keep_days',-1) }}</artifactDaysToKeep>
+            <artifactNumToKeep>{{ job.discard.get('artifact',{}).get('keep_num',-1) }}</artifactNumToKeep>
+          </strategy>
+      </jenkins.model.BuildDiscarderProperty>
+    {%- endif %}
+{%- endif %}
+{#-
+  vim: syntax=jinja sw=2 ts=2
+-#}

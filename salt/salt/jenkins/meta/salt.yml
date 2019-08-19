@@ -1,0 +1,21 @@
+minion:
+  {%- if pillar.get('jenkins', {}).get('client') %}
+  jenkins:
+    {%- from "jenkins/map.jinja" import client with context %}
+    jenkins:
+      url: "{{ client.master.get('proto', 'http') }}://{{ client.master.host }}:{{ client.master.port }}"
+      {%- if client.master.api_key is defined %}
+      api_key: {{ client.master.api_key }}
+      {%- else %}
+      user: {{ client.master.get('username', 'admin') }}
+      password: {{ client.master.get('password', 'dummy') }}
+      {%- endif %}
+  {%- endif %}
+dependency:
+  {%- if pillar.get('jenkins', {}).get('client') %}
+    {% from "jenkins/map.jinja" import client with context %}
+    {%- if client.enabled %}
+  engine: pkg
+  pkgs: {{ client.pkgs }}
+    {%- endif %}
+  {%- endif %}

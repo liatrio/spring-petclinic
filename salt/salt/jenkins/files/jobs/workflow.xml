@@ -1,0 +1,39 @@
+{%- from "jenkins/map.jinja" import client with context -%}
+{%- if job is not defined -%}
+  {%- set job = salt['pillar.get']('jenkins:client:job:'+job_name) -%}
+{%- endif -%}
+
+{%- macro load_groovy_file() -%}
+{%- set groovy_file=client.dir.jenkins_source_root+'/'+job.script.repository+'/'+job.script.file -%}
+{%- include groovy_file -%}
+{%- endmacro -%}
+
+{%- macro load_groovy_lib(lib) -%}
+{%- set groovy_file=client.dir.jenkins_source_root+'/'+lib.repository+'/'+lib.file -%}
+{%- include groovy_file -%}
+{%- endmacro -%}
+
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@{{ salt['grains.get']('jenkins_plugins:workflow-job:version', '2.5') }}">
+  {%- include "jenkins/files/jobs/_common.xml" %}
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@{{ salt['grains.get']('jenkins_plugins:workflow-cps:version', '2.12') }}">
+    <script>// libraries
+{%- if job.libs is defined %}
+{%- for lib in job.libs %}
+{{ load_groovy_lib(lib)|e }}
+{%- endfor %}
+{%- endif %}
+// workflow
+
+{%- if job.script.file is defined %}
+{{ load_groovy_file()|e }}
+{%- else %}
+{{ job.script.get('content', '')|e }}
+{%- endif %}
+    </script>
+    <sandbox>{{ "true" if job.get("sandbox", True) else "false" }}</sandbox>
+  </definition>
+</flow-definition>
+{#-
+  vim: syntax=jinja sw=2 ts=2
+-#}

@@ -1,0 +1,33 @@
+
+{%- set source_edition = salt['pillar.get']('artifactory:server:edition') %}
+
+{%- load_yaml as base_defaults %}
+Debian:
+  pkgs:
+  - jfrog-artifactory-{{ source_edition }}
+  service: artifactory
+  lib:
+    postgresql: https://jdbc.postgresql.org/download/postgresql-9.4.1209.jre6.jar
+  database:
+    engine: derby
+RedHat:
+  pkgs:
+  - jfrog-artifactory-{{ source_edition }}
+  service: artifactory
+  lib:
+    postgresql: https://jdbc.postgresql.org/download/postgresql-9.4.1209.jre6.jar
+  database:
+    engine: derby
+{%- endload %}
+
+{%- set server = salt['grains.filter_by'](base_defaults, merge=salt['pillar.get']('artifactory:server')) %}
+
+{%- load_yaml as client_defaults %}
+default:
+  pkgs:
+  - python-lxml
+  - python-requests
+  repo: {}
+{%- endload %}
+
+{%- set client = salt['grains.filter_by'](client_defaults, merge=salt['pillar.get']('artifactory:client')) %}

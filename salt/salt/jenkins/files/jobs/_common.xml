@@ -1,0 +1,205 @@
+  <actions/>
+  <description>
+    Salt generated project, do not edit. Changes will be overwritten.
+    {{ job.get('description', '')|e }}
+  </description>
+  {%- if job.display_name is defined %}
+  <displayName>{{ job.display_name }}</displayName>
+  {%- endif %}
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    {%- if not job.concurrent|default(False) %}
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    {%- endif %}
+    {%- if job.get('scm', {}).github is defined %}
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@{{ salt['grains.get']('jenkins_plugins:github:version', '1.21.1') }}">
+      <projectUrl>{{ job.scm.github.url }}</projectUrl>
+      {%- if job.scm.github.name is defined %}
+      <displayName>{{ job.scm.github.name }}</displayName>
+      {%- else %}
+      <displayName/>
+      {%- endif %}
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    {%- endif %}
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        {%- for type, trigger in job.get('trigger', {}).iteritems() %}
+        {%- if trigger.enabled|default(True) %}
+        {%- if type == 'reverse' %}
+        <jenkins.triggers.ReverseBuildTrigger>
+          <spec/>
+          <upstreamProjects>{{ trigger.projects|join(',') if trigger.projects is defined else trigger.project }}</upstreamProjects>
+          <threshold>
+            <name>{{ trigger.state|default('SUCCESS') }}</name>
+            <ordinal>{{ client.job_status.get(trigger.state|default('SUCCESS')).ordinal }}</ordinal>
+            <color>{{ client.job_status.get(trigger.state|default('SUCCESS')).color }}</color>
+            <completeBuild>{{ trigger.get('complete', True)|lower }}</completeBuild>
+          </threshold>
+        </jenkins.triggers.ReverseBuildTrigger>
+        {%- elif type == 'github' %}
+        <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@{{ salt['grains.get']('jenkins_plugins:github:version', '1.21.1') }}">
+          <spec/>
+        </com.cloudbees.jenkins.GitHubPushTrigger>
+        {%- elif type == 'webhook' %}
+        <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@{{ salt['grains.get']('jenkins_plugins:generic-webhook-trigger:version', '1.36') }}">
+          <spec>{{ trigger.spec|default("") }}</spec>
+          <regexpFilterText>{{ trigger.get('filter_text', '') }}</regexpFilterText>
+          <regexpFilterExpression>{{ trigger.get('filter_expression', '') }}</regexpFilterExpression>
+          <printPostContent>{{ trigger.get('print_content', False)|lower }}</printPostContent>
+          <printContributedVariables>{{ trigger.get('print_variables', False)|lower }}</printContributedVariables>
+          <causeString>{{ trigger.get('cause_string', "Generic Cause") }}</causeString>
+        </org.jenkinsci.plugins.gwt.GenericTrigger>
+        {%- elif type == 'pollscm' %}
+        <hudson.triggers.SCMTrigger>
+          <spec>{{ trigger.spec }}</spec>
+          <ignorePostCommitHooks>false</ignorePostCommitHooks>
+        </hudson.triggers.SCMTrigger>
+        {%- elif type == 'gerrit' %}
+        <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger plugin="gerrit-trigger@{{ salt['grains.get']('jenkins_plugins:gerrit-trigger:version', '2.23.0') }}">
+          <spec/>
+          <gerritProjects>
+            {%- for pname, project in trigger.project.iteritems() %}
+            <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject>
+              <compareType>{{ project.compare_type|default("PLAIN") }}</compareType>
+              <pattern>{{ project.name|default(pname) }}</pattern>
+              <branches>
+                {%- for branch in project.branches %}
+                <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.Branch>
+                  {%- if branch is mapping %}
+                  <compareType>{{ branch.compare_type|default("PLAIN") }}</compareType>
+                  <pattern>{{ branch.name }}</pattern>
+                  {%- else %}
+                  <compareType>PLAIN</compareType>
+                  <pattern>{{ branch }}</pattern>
+                  {%- endif %}
+                </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.Branch>
+                {%- endfor %}
+              </branches>
+            </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.data.GerritProject>
+            {%- endfor %}
+          </gerritProjects>
+          <skipVote>
+            <onSuccessful>{%- if "successful" in trigger.get('skip_vote',[]) %}true{%- else %}false{%- endif %}</onSuccessful>
+            <onFailed>{%- if "failed" in trigger.get('skip_vote',[]) %}true{%- else %}false{%- endif %}</onFailed>
+            <onUnstable>{%- if "unstable" in trigger.get('skip_vote',[]) %}true{%- else %}false{%- endif %}</onUnstable>
+            <onNotBuilt>{%- if "not_built" in trigger.get('skip_vote',[]) %}true{%- else %}false{%- endif %}</onNotBuilt>
+          </skipVote>
+          <silentMode>{{ trigger.get('silent_mode', False)|lower }}</silentMode>
+          <notificationLevel/>
+          <silentStartMode>{{ trigger.get('silent_start_mode', False)|lower }}</silentStartMode>
+          <escapeQuotes>true</escapeQuotes>
+          <nameAndEmailParameterMode>PLAIN</nameAndEmailParameterMode>
+          <dependencyJobsNames/>
+          <commitMessageParameterMode>BASE64</commitMessageParameterMode>
+          <changeSubjectParameterMode>PLAIN</changeSubjectParameterMode>
+          <commentTextParameterMode>BASE64</commentTextParameterMode>
+          {%- for override_key, override_value in trigger.get('override-votes', {}).iteritems() %}
+          <{{ override_key }}>{{ override_value }}</{{ override_key }}>
+          {%- endfor %}
+          {%- set message = trigger.get('message', {}).build_start|default("") %}
+          {%- if message != "" %}
+          <buildStartMessage>{{ message }}</buildStartMessage>
+          {%- else %}
+          <buildStartMessage/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).build_failure|default("") %}
+          {%- if message != "" %}
+          <buildFailureMessage>{{ message }}</buildFailureMessage>
+          {%- else %}
+          <buildFailureMessage/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).build_successful|default("") %}
+          {%- if message != "" %}
+          <buildSuccessfulMessage>{{ message }}</buildSuccessfulMessage>
+          {%- else %}
+          <buildSuccessfulMessage/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).build_unstable|default("") %}
+          {%- if message != "" %}
+          <buildUnstableMessage>{{ message }}</buildUnstableMessage>
+          {%- else %}
+          <buildUnstableMessage/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).build_not_built|default("") %}
+          {%- if message != "" %}
+          <buildNotBuiltMessage>{{ message }}</buildNotBuiltMessage>
+          {%- else %}
+          <buildNotBuiltMessage/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).build_unsuccessful_filepath|default("") %}
+          {%- if message != "" %}
+          <buildUnsuccessfulFilepath>{{ message }}</buildUnsuccessfulFilepath>
+          {%- else %}
+          <buildUnsuccessfulFilepath/>
+          {%- endif %}
+          {%- set message = trigger.get('message', {}).custom_url|default("") %}
+          {%- if message != "" %}
+          <customUrl>{{ message }}</customUrl>
+          {%- else %}
+          <customUrl/>
+          {%- endif %}
+          <serverName>{{ trigger.get('server', client.get('trigger_gerrit_server', '__ANY__')) }}</serverName>
+          {%- if trigger.event is defined %}
+          <triggerOnEvents>
+            {%- for ename, actions in trigger.event.iteritems() %}
+              {%- for action in actions %}
+                {%- if action is mapping %}
+                  {%- set action_name = action.keys().0 %}
+                  {%- set action_param = action.values().0 %}
+                {%- else %}
+                  {%- set action_name = action %}
+                {%- endif %}
+
+                {%- set _name_list = [] %}
+                {%- for letter in action_name %}
+                  {%- if loop.index == 1 %}
+                    {%- do _name_list.append(letter|title) %}
+                  {%- else %}
+                    {%- do _name_list.append(letter) %}
+                  {%- endif %}
+                {%- endfor %}
+
+                {%- if action_param is defined %}
+            <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.events.Plugin{{ ename|title }}{{ _name_list|join('') }}Event>
+                  {%- for key, value in action_param.iteritems() %}
+              <{{ key }}>{{ value }}</{{ key }}>
+                  {%- endfor %}
+            </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.events.Plugin{{ ename|title }}{{ _name_list|join('') }}Event>
+                {%- else %}
+            <com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.events.Plugin{{ ename|title }}{{ _name_list|join('') }}Event/>
+                {%- endif %}
+              {%- endfor %}
+            {%- endfor %}
+          </triggerOnEvents>
+          {%- endif %}
+          <dynamicTriggerConfiguration>false</dynamicTriggerConfiguration>
+          <triggerConfigURL/>
+          <triggerInformationAction/>
+        </com.sonyericsson.hudson.plugins.gerrit.trigger.hudsontrigger.GerritTrigger>
+        {%- elif type == 'timer' and trigger.spec != '' %}
+        <hudson.triggers.TimerTrigger>
+          {%- if trigger.spec is defined and trigger.spec != '' %}
+          <spec>{{ trigger.spec }}</spec>
+          {%- else %}
+          <spec/>
+          {%- endif %}
+        </hudson.triggers.TimerTrigger>
+        {%- endif %}
+        {%- endif %}
+        {%- endfor %}
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+    {%- include "jenkins/files/jobs/_parameters.xml" %}
+    {%- include "jenkins/files/jobs/_plugin_properties.xml" %}
+  </properties>
+  <triggers>
+  </triggers>
+  {%- if job.get("auth_token") %}
+  <authToken>{{ job.auth_token }}</authToken>
+  {%- endif %}
+  {%- if job.quiet_period is defined %}
+  <quietPeriod>{{ job.quiet_period }}</quietPeriod>
+  {%- endif %}
+{#-
+  vim: syntax=jinja sw=2 ts=2
+-#}

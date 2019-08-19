@@ -1,0 +1,18 @@
+applications:
+- jenkins
+classes:
+- service.jenkins.support
+parameters:
+  jenkins:
+    slave:
+      enabled: true
+      pkgs: false
+      sudo: false
+      scripts: []
+      master:
+        host: 127.0.0.1
+        port: 8080
+        protocol: http
+      user:
+        name: admin
+        password: ${_param:jenkins_admin_password}

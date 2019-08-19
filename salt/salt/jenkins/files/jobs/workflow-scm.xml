@@ -1,0 +1,52 @@
+{%- from "jenkins/map.jinja" import client with context -%}
+{%- if job is not defined -%}
+  {%- set job = salt['pillar.get']('jenkins:client:job:'+job_name) -%}
+{%- endif -%}
+<?xml version="1.0" encoding="UTF-8"?><flow-definition plugin="workflow-job@{{ salt['grains.get']('jenkins_plugins:workflow-job:version', '2.6') }}">
+  {%- include "jenkins/files/jobs/_common.xml" %}
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@{{ salt['grains.get']('jenkins_plugins:workflow-cps:version', '2.13') }}">
+    {%- if job.scm.get('type', 'git') == 'git' %}
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@{{ salt['grains.get']('jenkins_plugins:git:version', '2.5.3') }}">
+      <configVersion>2</configVersion>
+      <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+          <url>{{ job.scm.url }}</url>
+          {%- if job.scm.credentials is defined %}
+          <credentialsId>{{ job.scm.credentials }}</credentialsId>
+          {%- endif %}
+        </hudson.plugins.git.UserRemoteConfig>
+      </userRemoteConfigs>
+      <branches>
+        {%- if job.scm.branches is defined %}
+        {%- for branch in job.scm.branches %}
+        <hudson.plugins.git.BranchSpec>
+          <name>{{ branch }}</name>
+        </hudson.plugins.git.BranchSpec>
+        {%- endfor %}
+        {%- else %}
+        <hudson.plugins.git.BranchSpec>
+          <name>{{ job.scm.branch|default('*/master') }}</name>
+        </hudson.plugins.git.BranchSpec>
+        {%- endif %}
+      </branches>
+      <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+      <submoduleCfg class="list"/>
+      <extensions>
+        {%- if job.scm.get('clone') %}
+        <hudson.plugins.git.extensions.impl.CloneOption>
+          <shallow>{{ job.scm.clone.get('shallow', False)|lower }}</shallow>
+          <noTags>{{ job.scm.clone.get('no_tags', False)|lower }}</noTags>
+          <reference>{{ job.scm.clone.get('reference', "") }}</reference>
+          <depth>{{ job.scm.clone.get('depth', 0) }}</depth>
+          <honorRefspec>{{ job.scm.clone.get('honor_refspec', False)|lower }}</honorRefspec>
+        </hudson.plugins.git.extensions.impl.CloneOption>
+        {%- endif %}
+      </extensions>
+    </scm>
+    {%- endif %}
+    <scriptPath>{{ job.scm.script|default('Jenkinsfile') }}</scriptPath>
+  </definition>
+</flow-definition>
+{#-
+  vim: syntax=jinja sw=2 ts=2
+-#}
