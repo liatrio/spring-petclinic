@@ -7,7 +7,7 @@ Type=simple
 User={{ sonarqube.user }}
 Group={{ sonarqube.group }}
 PermissionsStartOnly=true
-ExecStart=/bin/nohup /opt/java/bin/java -Xms32m -Xmx32m -Djava.net.preferIPv4Stack=true -jar {{ sonarqube.bin_path }}
+ExecStart=/bin/nohup /usr/lib/java -Xms32m -Xmx32m -Djava.net.preferIPv4Stack=true -jar {{ sonarqube.bin_path }}
 StandardOutput=syslog
 LimitNOFILE=65536
 LimitNPROC=8192

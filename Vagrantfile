@@ -100,7 +100,7 @@ Vagrant.configure("2") do |config|
         'java' => {
           'environment' => {
             'enabled' => true,
-            'version' => '8',
+            'version' => '11',
             'platform' => 'openjdk',
             'development' => false
           }
