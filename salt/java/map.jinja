@@ -1,0 +1,62 @@
+{% set java_version = pillar.java.environment.get('version', '7') %}
+
+{% if java_version == '7' %}
+{% set java_release = '76' %}
+{% set java_build = '13' %}
+{% elif java_version == '8' %}
+{% set java_release = '60' %}
+{% set java_build = '27' %}
+{% endif %}
+
+{%- if pillar.java.environment.get('headless', False) %}
+{%- set headless_str = "-headless" %}
+{%- endif %}
+
+{% set environment = salt['grains.filter_by']({
+    'Debian': {
+        'version': java_version,
+        'release': java_release,
+        'home_dir': '/usr/lib/java',
+        'build': java_build,
+        'pkgs': ['openjdk-', java_version, '-jre', headless_str|default("")] | join(''),
+        'dev_pkgs': ['openjdk-', java_version, '-jdk' + headless_str|default("")] | join(''),
+    },
+    'RedHat': {
+        'version': java_version,
+        'release': java_release,
+        'home_dir': '/usr/lib/java',
+        'build': java_build,
+        'pkgs': ['java-1.', java_version, '.0-openjdk'] | join(''),
+        'dev_pkgs': ['java-1.',  java_version, '.0-openjdk'] | join(''),
+    },
+}, merge=salt['pillar.get']('java:environment')) %}
+
+{%- if environment.platform == 'oracle-java' %}
+{%- set java_home = environment.home_dir %}
+{%- set prefix = '/usr/share/java' %}
+{%- set oracle_cookie = 'Cookie: oraclelicense=accept-securebackup-cookie' %}
+{%- set dl_opts = '-LOH' %}
+{%- if java_version == '8' %}
+{%- set source_url = salt['cmd.run']('curl -s https://lv.binarybabel.org/catalog-api/java/jdk8.txt?p=downloads.tgz') %}
+{%- set version_name = salt['cmd.run']('curl -s https://lv.binarybabel.org/catalog-api/java/jdk8.txt?p=version') %}
+{%- set oracle_file_name = 'jdk-' + salt['cmd.run']('curl -s https://lv.binarybabel.org/catalog-api/java/jdk8.txt?p=version_parsed.major') + 'u' + salt['cmd.run']('curl -s https://lv.binarybabel.org/catalog-api/java/jdk8.txt?p=version_parsed.minor') + '-linux-x64.tar.gz' %}
+{%- elif (java_version == '9' or java_version == '10') %}
+{%- set java_build = environment.build %}
+{%- set java_release = environment.release %}
+{%- set version_name = java_version + '.' + java_release + '+' + java_build %}
+{%- set oracle_file_name = 'jdk-' + java_version + '.' + java_release + '_linux-x64_bin.tar.gz' %}
+{%- set oracle_hash = environment.oracle_hash %}
+{%- set source_url = 'http://download.oracle.com/otn-pub/java/jdk/' + version_name + '/' + oracle_hash + '/' + oracle_file_name %}
+{%- endif %}
+{%- set java_real_home = prefix + '/' + version_name %}
+{%- endif %}
+
+{%- do environment.update( { 'version_name' : version_name,
+    'source_url' : source_url,
+    'dl_opts' : dl_opts,
+    'oracle_cookie' : oracle_cookie,
+    'oracle_file_name' : oracle_file_name,
+    'java_home' : java_home,
+    'prefix' : prefix,
+    'java_real_home' : java_real_home
+}) %}

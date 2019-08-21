@@ -1,7 +1,7 @@
-{% from 'java/map.jinja' import java with context %}
+{% set java_home = salt['pillar.get']('java:java_home', default='/usr/lib/java') %}
 {% set sonarqube = salt['pillar.get']('sonarqube', {}) %}
 {% set java_env = salt['pillar.get']('java:env', default='jre8') %}
 
 {% do sonarqube.update({
-  'java': java[java_env].home + '/bin/java'
+  'java': java_home + '/bin/java'
 }) %}

@@ -1,5 +1,6 @@
 {% from "jenkins/map.jinja" import master with context %}
 
+{%- if master.user -%}
 {%- for user_name, user in master.user.iteritems() %}
 
 {{ master.home }}/users/{{ user_name }}:
@@ -31,3 +32,4 @@
   - unless: test -e {{ master.home }}/users/{{ user_name }}/.config_created
 
 {%- endfor %}
+{%- endif -%}
