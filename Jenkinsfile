@@ -19,10 +19,11 @@ pipeline {
           args '-e admin -e password'
         }
       }
+      environment {
+        SERVER = 'http://liatrioaartifactory:9000/artifactory/liatriomaven'
+      }
       steps {
-        configFileProvider([configFile(fileId: 'nexus', variable: 'MAVEN_SETTINGS')]) {
-          sh 'mvn -s $MAVEN_SETTINGS clean deploy -DskipTests=true -B'
-        }
+        sh "mvn clean deploy -DskipTests=true -DaltDeploymentRepository=${SERVER} -B"
       }
     }
     stage('Sonar') {
@@ -32,8 +33,12 @@ pipeline {
           args '-e admin -e admin'
         }
       }
+      environment {
+        SONAR_ACCOUNT_LOGIN = 'admin'
+          SONAR_ACCOUNT_PASSWORD = 'admin'
+      }
       steps {
-        sh '/opt/sonar-runner-2.4/bin/sonar-runner -e -D sonar.login=${SONAR_ACCOUNT_LOGIN} -D sonar.password=${SONAR_ACCOUNT_PASSWORD}'
+        sh "/opt/sonar-runner-2.4/bin/sonar-runner -e -D sonar.login=${SONAR_ACCOUNT_LOGIN} -D sonar.password=${SONAR_ACCOUNT_PASSWORD}"
       }
     }
 
