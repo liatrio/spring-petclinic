@@ -104,7 +104,7 @@ pipeline {
                 }
             }
         }
-        stage ('Validate Deploy to test') {
+        stage ('Validate Deploy to dev') {
             failFast true
             parallel {
             stage('Healthcheck') {
