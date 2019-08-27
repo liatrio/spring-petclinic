@@ -104,17 +104,29 @@ pipeline {
                 }
             }
         }
-        stage('Validate deploy to Dev') {
-            steps {
-                echo 'Call health check endpoint....'
+        stage ('Validate Deploy to test') {
+            failFast true
+            parallel {
+            stage('Healthcheck') {
+                steps {
+                    echo 'Call health check endpoint....'
+                }
+            }
+
+            stage('Run Smoke Tests on dev') {
+                when { branch 'master' }
+                steps {
+                    echo 'Run Smoke tests on dev......'
+                }
+            }
+
+            stage('API Service Test') {
+                steps {
+                    echo 'Call API test with Postman....'
+                }
+            }
             }
         }
-
-  		stage('API Service Test') {
-   			steps {
-                echo 'Call health check endpoint....'
-   			}
-  		}
   		
   		stage('Deploy to Test') {
         	when { branch 'master' }
@@ -122,13 +134,27 @@ pipeline {
                 echo 'Deploy to test environment....'               
             }
         }
-        
-        stage('Validate deploy to test') {
-        	when {  branch 'master' }
-            steps {
-                echo 'Validate Deploy with ......executeHealthCheck'               
+
+        stage ('Validate Deploy to test') {
+            failFast true
+            parallel {
+                stage('Healthcheck test') {
+                    steps {
+                        echo 'Call health check endpoint....'
+                    }
+                }
+
+                stage('Run Smoke Tests on test') {
+                    when { branch 'master' }
+                    steps {
+                        echo 'Run Smoke tests on test......'
+                    }
+                }
+
             }
         }
+
+
         
         stage ('Acceptance') {
         	failFast true
@@ -222,7 +248,7 @@ pipeline {
             }
         }
 
-        stage('Run Smoke Tests') {
+        stage('Run Smoke Tests on B Blue') {
             when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod B Green......'
@@ -236,7 +262,7 @@ pipeline {
             }
         }
 
-        stage('Run Smoke Tests') {
+        stage('Run Smoke Tests on B Green') {
             when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod B Green......'
