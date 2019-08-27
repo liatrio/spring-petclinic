@@ -24,27 +24,27 @@ pipeline {
 	                sh 'mvn clean test'
             	}
         	} 
-        	post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
+        	//post {
+            //    always {
+            //        junit 'target/surefire-reports/*.xml'
+            //    }
+            //}
         }
-        stage('Test coverage validation'){
-    		steps {
-	    		lock(resource: "${env.JOB_NAME}/30", inversePrecedence: true) {
-					milestone 30
-		    		deleteDir()
-		            measureDuration(script: this, measurementName: 'coverage_duration') {
-		                checkout scm
-		                sh "mvn clean verify -amd -T 1.5C"
+        //stage('Test coverage validation'){
+    	//	steps {
+	    //		lock(resource: "${env.JOB_NAME}/30", inversePrecedence: true) {
+		//			milestone 30
+		//    		deleteDir()
+		//            measureDuration(script: this, measurementName: 'coverage_duration') {
+		//                checkout scm
+		//                sh "mvn clean verify -amd -T 1.5C"
 			            
-		        	}
-					jacoco()
-					publishCoverage adapters: [jacocoAdapter('')], sourceFileResolver: sourceFiles('NEVER_STORE')
-				}
-    		}    	
-        }
+		//        	}
+		//			jacoco()
+		//			publishCoverage adapters: [jacocoAdapter('')], sourceFileResolver: sourceFiles('NEVER_STORE')
+		//		}
+    	//	}
+        //}
         stage ('Quality & Security Control') {
         	failFast true
             parallel {
