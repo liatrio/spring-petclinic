@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building......'
                 sh 'mvn -B -DskipTests clean install'
 
             }
@@ -21,7 +21,7 @@ pipeline {
                 //deleteDir()
                 //measureDuration(script: this, measurementName: 'unit_duration') {
 	              //  checkout scm
-	                sh 'mvn clean test'
+	                sh 'mvn test'
             	//}
         	} 
         	//post {
