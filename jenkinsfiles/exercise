@@ -17,12 +17,12 @@ pipeline {
         }
         stage('Unit Test') {
             steps {
-                echo 'Testing..'
-                deleteDir()
-                measureDuration(script: this, measurementName: 'unit_duration') {
-	                checkout scm
+                echo 'Unit Testing.....'
+                //deleteDir()
+                //measureDuration(script: this, measurementName: 'unit_duration') {
+	              //  checkout scm
 	                sh 'mvn clean test'
-            	}
+            	//}
         	} 
         	//post {
             //    always {
@@ -52,9 +52,6 @@ pipeline {
 		        	steps {
 
 						echo 'Running quality scan with Sonar..... '
-                        measureDuration(script: this, measurementName: 'sonar_duration') {
-                           echo "${pom.version}"
-                        }
 		            	
 					}
 		        }
@@ -66,13 +63,8 @@ pipeline {
 		        }
 		        stage('Security Blackduck Scan') {
 		            steps {
-		                echo 'Running OSS Scan '
-		                deleteDir()
-                        measureDuration(script: this, measurementName: 'vulas_duration') {
-	                        executeDocker(dockerImage: 'docker.wdf.sap.corp:50000/piper/maven', dockerWorkspace: '/home/piper') {
-	                        	sh 'mvn clean compile -pl java -Dvulas.report.sap.scv=73555000100200008094 com.sap.research.security.vulas:plugin-maven:3.0.8:clean com.sap.research.security.vulas:plugin-maven:3.0.8:app com.sap.research.security.vulas:plugin-maven:3.0.8:a2c test com.sap.research.security.vulas:plugin-maven:3.0.8:upload com.sap.research.security.vulas:plugin-maven:3.0.8:t2c'
-	                        }
-	                    }               
+		                echo 'Running OSS Scan ..........'
+
 		            }
 		        }
 			}
