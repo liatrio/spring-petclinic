@@ -107,7 +107,6 @@ pipeline {
             }
 
             stage('Run Smoke Tests on dev') {
-                when { branch 'master' }
                 steps {
                     echo 'Run Smoke tests on dev......'
                 }
@@ -138,7 +137,6 @@ pipeline {
                 }
 
                 stage('Run Smoke Tests on test') {
-                    when { branch 'master' }
                     steps {
                         echo 'Run Smoke tests on test......'
                     }
@@ -171,8 +169,7 @@ pipeline {
 	    stage('Deploy to prod?'){
             steps {
                 input(
-                    message: 'Do you want to publish a new version of the library in A?',
-                    submitter: 'i506606'
+                    message: 'Do you want to publish a new version of the library in A?'
                 )              
             }
 	    }
@@ -198,7 +195,6 @@ pipeline {
         }
 
         stage('Run Smoke Tests on A Blue') {
-        	when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod A Blue......'
             }
@@ -212,7 +208,6 @@ pipeline {
         }
 
         stage('Run Smoke Tests on A Grenn') {
-            when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod A Green......'
             }
@@ -228,8 +223,7 @@ pipeline {
         stage('Deploy to prod B?'){
             steps {
                 input(
-                        message: 'Do you want to publish a new version of the library on B?',
-                        submitter: 'i506606'
+                        message: 'Do you want to publish a new version of the library on B?'
                 )
             }
         }
@@ -242,7 +236,6 @@ pipeline {
         }
 
         stage('Run Smoke Tests on B Blue') {
-            when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod B Green......'
             }
@@ -255,8 +248,7 @@ pipeline {
             }
         }
 
-        stage('Run Smoke Tests on B Green') {
-            when { branch 'master' }
+        stage('Run Smoke Tests on B Green') {\
             steps {
                 echo 'Run Smoke tests on prod B Green......'
             }
