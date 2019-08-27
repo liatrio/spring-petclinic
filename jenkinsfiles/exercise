@@ -52,18 +52,21 @@ pipeline {
 		        	steps {
 
 						echo 'Running quality scan with Sonar..... '
+                        sh 'sleep 4'
 		            	
 					}
 		        }
 		        stage('Security Fortify Scan'){
 		        	steps {
 		        		echo 'Running local fortify scan......'
+                        sh 'sleep 2'
 
 					}
 		        }
 		        stage('Security Blackduck Scan') {
 		            steps {
 		                echo 'Running OSS Scan ..........'
+                        sh 'sleep 5'
 
 		            }
 		        }
@@ -94,6 +97,7 @@ pipeline {
             post {
                 always {
                     echo 'Call health check endpoint....'
+                    sh 'sleep 2'
                 }
             }
         }
@@ -103,18 +107,21 @@ pipeline {
             stage('Healthcheck') {
                 steps {
                     echo 'Call health check endpoint....'
+                    sh 'sleep 1'
                 }
             }
 
             stage('Run Smoke Tests on dev') {
                 steps {
                     echo 'Run Smoke tests on dev......'
+                    sh 'sleep 5'
                 }
             }
 
             stage('API Service Test') {
                 steps {
                     echo 'Call API test with Postman....'
+                    sh 'sleep 7'
                 }
             }
             }
@@ -122,7 +129,8 @@ pipeline {
   		
   		stage('Deploy to Test') {
             steps {
-                echo 'Deploy to test environment....'               
+                echo 'Deploy to test environment....'
+                sh 'sleep 6'
             }
         }
 
@@ -132,12 +140,14 @@ pipeline {
                 stage('Healthcheck test') {
                     steps {
                         echo 'Call health check endpoint....'
+                        sh 'sleep 1'
                     }
                 }
 
                 stage('Run Smoke Tests on test') {
                     steps {
                         echo 'Run Smoke tests on test......'
+                        sh 'sleep 4'
                     }
                 }
 
@@ -153,11 +163,13 @@ pipeline {
 		        stage('Run Functional Tests'){
 		    		steps {
 		    			echo 'Run functional tests........'
+                        sh 'sleep 8'
 		    		}    	
 		        }
 		        stage('Run Performance Tests'){
 		        	steps {
 		        		echo 'Run performance tests with executePerformanceJMeterTests...........'
+                        sh 'sleep 10'
 						}
 		        }
 
@@ -175,7 +187,8 @@ pipeline {
 	    
 	    stage('Create Tag') {
             steps {
-                echo 'Create GitHub Tag....  with...'   
+                echo 'Create GitHub Tag....  with...'
+                sh 'sleep 1'
                             
             }
         }
@@ -183,6 +196,7 @@ pipeline {
         stage('Create Change Management App Ticket') {
             steps {
                 echo 'create change management ticket in ServiceNow....... '
+                sh 'sleep 4'
             }
         }
         
@@ -190,12 +204,14 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                  echo 'Validate Deploy with ......executeHealthCheck'
+                sh 'sleep 4'
             }
         }
 
         stage('Run Smoke Tests on A Blue') {
             steps {
                 echo 'Run Smoke tests on prod A Blue......'
+                sh 'sleep 2'
             }
         }
 
@@ -203,18 +219,21 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Green environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
+                sh 'sleep 4'
             }
         }
 
         stage('Run Smoke Tests on A Grenn') {
             steps {
                 echo 'Run Smoke tests on prod A Green......'
+                sh 'sleep 2'
             }
         }
 
         stage('Notify Build Status on A') {
             steps {
                 echo 'Notify Build Status on Slack.......'
+                sh 'sleep 1'
             }
 
         }
@@ -231,12 +250,14 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
+                sh 'sleep 4'
             }
         }
 
         stage('Run Smoke Tests on B Blue') {
             steps {
                 echo 'Run Smoke tests on prod B Green......'
+                sh 'sleep 2'
             }
         }
 
@@ -244,18 +265,21 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
+                sh 'sleep 4'
             }
         }
 
         stage('Run Smoke Tests on B Green') {\
             steps {
                 echo 'Run Smoke tests on prod B Green......'
+                sh 'sleep 2'
             }
         }
         
   		stage('Notify Build Status on B') {
   			steps {
                 echo 'Notify Build Status on Slack.......'
+                sh 'sleep 1'
             }
   		
   		}
