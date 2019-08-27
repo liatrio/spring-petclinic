@@ -219,6 +219,7 @@ pipeline {
         ]) {
           script {
             sh "TAG=${TAG} blue-green/blue-green toggle"
+            
           }
         }
       }
