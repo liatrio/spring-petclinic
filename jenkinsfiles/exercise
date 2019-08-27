@@ -1,0 +1,254 @@
+#!/bin/env groovy
+
+pipeline {
+    agent any
+    environment {
+    	GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIALS')
+    	IMAGE = "liatrio/petclinic-tomcat"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+                sh 'mvn -B -DskipTests clean install'
+
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                echo 'Testing..'
+                deleteDir()
+                measureDuration(script: this, measurementName: 'unit_duration') {
+	                checkout scm
+	                sh 'mvn clean test'
+            	}
+        	} 
+        	post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Test coverage validation'){
+    		steps {
+	    		lock(resource: "${env.JOB_NAME}/30", inversePrecedence: true) {
+					milestone 30
+		    		deleteDir()
+		            measureDuration(script: this, measurementName: 'coverage_duration') {
+		                checkout scm
+		                sh "mvn clean verify -amd -T 1.5C"
+			            
+		        	}
+					jacoco()
+					publishCoverage adapters: [jacocoAdapter('')], sourceFileResolver: sourceFiles('NEVER_STORE')
+				}
+    		}    	
+        }
+        stage ('Quality & Security Control') {
+        	failFast true
+            parallel {
+		        stage('Quality Scan'){
+		        	steps {
+
+						echo 'Running quality scan with Sonar..... '
+                        measureDuration(script: this, measurementName: 'sonar_duration') {
+                           echo "${pom.version}"
+                        }
+		            	
+					}
+		        }
+		        stage('Security Fortify Scan'){
+		        	steps {
+		        		echo 'Running local fortify scan......'
+
+					}
+		        }
+		        stage('Security Blackduck Scan') {
+		            steps {
+		                echo 'Running OSS Scan '
+		                deleteDir()
+                        measureDuration(script: this, measurementName: 'vulas_duration') {
+	                        executeDocker(dockerImage: 'docker.wdf.sap.corp:50000/piper/maven', dockerWorkspace: '/home/piper') {
+	                        	sh 'mvn clean compile -pl java -Dvulas.report.sap.scv=73555000100200008094 com.sap.research.security.vulas:plugin-maven:3.0.8:clean com.sap.research.security.vulas:plugin-maven:3.0.8:app com.sap.research.security.vulas:plugin-maven:3.0.8:a2c test com.sap.research.security.vulas:plugin-maven:3.0.8:upload com.sap.research.security.vulas:plugin-maven:3.0.8:t2c'
+	                        }
+	                    }               
+		            }
+		        }
+			}
+	    }
+	    stage('Package') {
+              agent any
+              steps {
+                script {
+                  if ( env.BRANCH_NAME == 'master' ) {
+                    pom = readMavenPom file: 'pom.xml'
+                    TAG = pom.version
+                  } else {
+                    TAG = env.BRANCH_NAME
+                  }
+                  sh "docker build -t ${env.IMAGE}:${TAG} ."
+                }
+              }
+            }
+        
+        stage('Deploy to Dev') {
+            steps {
+                echo 'Deploying....'               
+                sh 'docker rm -f petclinic-tomcat-temp || true'
+                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+            }
+            post {
+                always {
+                    echo 'Call health check endpoint....'
+                }
+            }
+        }
+        stage('Validate deploy to Dev') {
+            steps {
+                echo 'Call health check endpoint....'
+            }
+        }
+
+  		stage('API Service Test') {
+   			steps {
+                echo 'Call health check endpoint....'
+   			}
+  		}
+  		
+  		stage('Deploy to Test') {
+        	when { branch 'master' }
+            steps {
+                echo 'Deploy to test environment....'               
+            }
+        }
+        
+        stage('Validate deploy to test') {
+        	when {  branch 'master' }
+            steps {
+                echo 'Validate Deploy with ......executeHealthCheck'               
+            }
+        }
+        
+        stage ('Acceptance') {
+        	failFast true
+            parallel {
+		        
+		        stage('Run Functional Tests'){
+		    		steps {
+		    			echo 'Run functional tests........'
+		    		}    	
+		        }
+		        stage('Run Performance Tests'){
+		        	steps {
+		        		echo 'Run performance tests with executePerformanceJMeterTests...........'
+						}
+		        }
+
+		       
+			}
+	    }
+	    
+	    stage('Deploy to prod?'){
+            steps {
+                input(
+                    message: 'Do you want to publish a new version of the library in A?',
+                    submitter: 'i506606'
+                )              
+            }
+	    }
+	    
+	    stage('Create Tag') {
+            steps {
+                echo 'Create GitHub Tag....  with...'   
+                            
+            }
+        }
+        
+        stage('Create Change Management App Ticket') {
+            steps {
+                echo 'create change management ticket in ServiceNow....... '
+            }
+        }
+        
+  		stage('Deploy to Prod - Pool A Blue') {
+            steps {
+                echo 'Deploy to prod A Blue environment....'
+                 echo 'Validate Deploy with ......executeHealthCheck'
+            }
+        }
+
+        stage('Run Smoke Tests') {
+        	when { branch 'master' }
+            steps {
+                echo 'Run Smoke tests on prod A Blue......'
+            }
+        }
+
+        stage('Deploy to Prod - Pool A Green') {
+            steps {
+                echo 'Deploy to prod A Green environment....'
+                echo 'Validate Deploy with ......executeHealthCheck'
+            }
+        }
+
+        stage('Run Smoke Tests') {
+            when { branch 'master' }
+            steps {
+                echo 'Run Smoke tests on prod A Green......'
+            }
+        }
+
+        stage('Notify Build Status') {
+            steps {
+                echo 'Notify Build Status on Slack.......'
+            }
+
+        }
+
+        stage('Deploy to prod B?'){
+            steps {
+                input(
+                        message: 'Do you want to publish a new version of the library on B?',
+                        submitter: 'i506606'
+                )
+            }
+        }
+
+        stage('Deploy to Prod - Pool B Blue') {
+            steps {
+                echo 'Deploy to prod A Blue environment....'
+                echo 'Validate Deploy with ......executeHealthCheck'
+            }
+        }
+
+        stage('Run Smoke Tests') {
+            when { branch 'master' }
+            steps {
+                echo 'Run Smoke tests on prod B Green......'
+            }
+        }
+
+        stage('Deploy to Prod - Pool B Grenn') {
+            steps {
+                echo 'Deploy to prod A Blue environment....'
+                echo 'Validate Deploy with ......executeHealthCheck'
+            }
+        }
+
+        stage('Run Smoke Tests') {
+            when { branch 'master' }
+            steps {
+                echo 'Run Smoke tests on prod B Green......'
+            }
+        }
+        
+  		stage('Notify Build Status') {
+  			steps {
+                echo 'Notify Build Status on Slack.......'
+            }
+  		
+  		}
+  		
+    }
+}
