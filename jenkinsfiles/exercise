@@ -178,7 +178,7 @@ pipeline {
             }
         }
 
-        stage('Run Smoke Tests') {
+        stage('Run Smoke Tests on A Blue') {
         	when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod A Blue......'
@@ -192,14 +192,14 @@ pipeline {
             }
         }
 
-        stage('Run Smoke Tests') {
+        stage('Run Smoke Tests on A Grenn') {
             when { branch 'master' }
             steps {
                 echo 'Run Smoke tests on prod A Green......'
             }
         }
 
-        stage('Notify Build Status') {
+        stage('Notify Build Status on A') {
             steps {
                 echo 'Notify Build Status on Slack.......'
             }
@@ -243,7 +243,7 @@ pipeline {
             }
         }
         
-  		stage('Notify Build Status') {
+  		stage('Notify Build Status on B') {
   			steps {
                 echo 'Notify Build Status on Slack.......'
             }
