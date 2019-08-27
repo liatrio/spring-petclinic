@@ -49,7 +49,6 @@ git clone https://github.com/spring-projects/spring-petclinic.git
 File -> Import -> Maven -> Existing Maven project
 ```
 
-
 ## Looking for something in particular?
 
 <table>
