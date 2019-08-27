@@ -73,6 +73,7 @@ pipeline {
               agent any
               steps {
                 script {
+                  sh 'mvn install'
                   if ( env.BRANCH_NAME == 'master' ) {
                     pom = readMavenPom file: 'pom.xml'
                     TAG = pom.version
