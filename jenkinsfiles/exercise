@@ -71,12 +71,7 @@ pipeline {
             steps {
                 script {
                     sh 'mvn install'
-                    if (env.BRANCH_NAME == 'master') {
-                        pom = readFile file: 'pom.xml'
-                        TAG = pom.version
-                    } else {
-                        TAG = env.BRANCH_NAME
-                    }
+                    TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
             }
