@@ -18,29 +18,31 @@ pipeline {
             }
         }
 
+        stage('Unit Test') {
+            steps {
+                echo 'Unit Testing.....'
+
+                sh 'mvn test'
+            }
+
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Test coverage validation') {
+            steps {
+                sh "mvn verify cobertura:cobertura -amd -T 1.5C"
+                //cobertura()
+            }
+
+        }
+
         stage('Quality & Security Control') {
             failFast true
             parallel {
-                stage('Unit Test') {
-                    steps {
-                        echo 'Unit Testing.....'
 
-                        sh 'mvn test'
-                    }
-
-                    post {
-                        always {
-                            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-                        }
-                    }
-                }
-                stage('Test coverage validation') {
-                    steps {
-                        sh "mvn verify cobertura:cobertura -amd -T 1.5C"
-                        //cobertura()
-                    }
-
-                }
                 stage('Quality Scan') {
                     steps {
 
