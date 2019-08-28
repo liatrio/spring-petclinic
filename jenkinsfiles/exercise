@@ -156,7 +156,6 @@ pipeline {
         }
 
 
-
         stage('Acceptance') {
             when { branch 'master' }
             failFast true
@@ -179,14 +178,23 @@ pipeline {
             }
         }
 
+        // In this moment, its where I have taken different approaches, depending on the delivery model
+        // from the company. It means, it the next steps can go directly from master, with the question
+        // or it can be trigger by a release manager creating a "Release" Branch in GitHub
+        // The constraints to this approaches is the SOX regulatory requirement to have same artifact
+        // deployed in prod that was tested on lower env.
+        // I think both approaches are good. What will make one or the other preferred is the delivery frequency
+        // of the product and team
         stage('Deploy to prod?'){
             when {  branch 'master' }
             steps {
                 input(
-                        message: 'Do you want to publish a new version of the library in A?'
+                        message: 'Do you want to publish a new app version?'
                 )
             }
         }
+
+
 
         stage('Release Management & Audit') {
             when { branch 'master' }
