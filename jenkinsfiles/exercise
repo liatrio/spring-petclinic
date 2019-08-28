@@ -103,7 +103,9 @@ pipeline {
             stage('Run Smoke Tests on dev') {
                 steps {
                     echo 'Run Smoke tests on dev......'
-                    sh 'sleep 5'
+                    sh "cd regression-suite"
+                    sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
+                    echo "Should be accessible at http://localhost:18888/petclinic"
                 }
             }
 
