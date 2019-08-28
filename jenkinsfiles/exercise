@@ -23,12 +23,12 @@ pipeline {
 	              //  checkout scm
 	                sh 'mvn test'
             	//}
-        	} 
-        	//post {
-            //    always {
-            //        junit 'target/surefire-reports/*.xml'
-            //    }
-            //}
+        	}
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                }
+            }
         }
         //stage('Test coverage validation'){
     	//	steps {
@@ -52,7 +52,9 @@ pipeline {
 		        	steps {
 
 						echo 'Running quality scan with Sonar..... '
-                        sh 'sleep 4'
+                        withSonarQubeEnv {
+                            sh "./gradlew clean sonarqube"
+                        }
 		            	
 					}
 		        }
