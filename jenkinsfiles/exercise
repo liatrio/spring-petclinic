@@ -11,18 +11,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building......'
-                sh 'mvn -B -DskipTests clean install deploy'
+                sh 'mvn -B -DskipTests clean install'
 
             }
         }
         stage('Unit Test') {
             steps {
                 echo 'Unit Testing.....'
-                //deleteDir()
-                //measureDuration(script: this, measurementName: 'unit_duration') {
-	              //  checkout scm
+
 	                sh 'mvn test'
-            	//}
+            }
         	}
             post {
                 always {
@@ -34,7 +32,6 @@ pipeline {
     		steps {
 		            sh "mvn  check -amd -T 1.5C"
                     cobertura()
-					publishCoverage adapters: [coberturaAdapter('')], sourceFileResolver: sourceFiles('NEVER_STORE')
 				}
     		}
         }
