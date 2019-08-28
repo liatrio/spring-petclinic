@@ -3,10 +3,27 @@
 pipeline {
     agent any
     environment {
-    	GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIALS')
-    	IMAGE = "liatrio/petclinic-tomcat"
+        GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIALS')
+        IMAGE = "liatrio/petclinic-tomcat"
     }
 
+
+    if (env.BRANCH_NAME == 'master') {
+        devPipeline()
+        prPipeline()
+        deliveryPipeline()
+    } else {
+        if (env.BRANCH_NAME == 'PR-*') {
+            devPipeline()
+            prPipeline()
+
+        } else {
+            devPipeline
+        }
+    }
+}
+
+def devPipeline () {
     stages {
         stage('Build') {
             steps {
@@ -14,72 +31,77 @@ pipeline {
                 sh 'mvn -B -DskipTests clean install'
             }
         }
-        stage('Unit Test') {
-            steps {
-                echo 'Unit Testing.....'
 
-	                sh 'mvn test'
-            }
-
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-        stage('Test coverage validation'){
-    		steps {
-		            sh "mvn verify cobertura:cobertura -amd -T 1.5C"
-                    //cobertura()
-				}
-
-        }
-        stage ('Quality & Security Control') {
-        	failFast true
+        stage('Quality & Security Control') {
+            failFast true
             parallel {
-		        stage('Quality Scan'){
-		        	steps {
+                stage('Unit Test') {
+                    steps {
+                        echo 'Unit Testing.....'
 
-						echo 'Running quality scan with Sonar..... '
+                        sh 'mvn test'
+                    }
+
+                    post {
+                        always {
+                            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                        }
+                    }
+                }
+                stage('Test coverage validation') {
+                    steps {
+                        sh "mvn verify cobertura:cobertura -amd -T 1.5C"
+                        //cobertura()
+                    }
+
+                }
+                stage('Quality Scan') {
+                    steps {
+
+                        echo 'Running quality scan with Sonar..... '
                         sh 'sleep 4'
-		            	
-					}
-		        }
-		        stage('Security Fortify Scan'){
-		        	steps {
-		        		echo 'Running local fortify scan......'
+
+                    }
+                }
+                stage('Security Fortify Scan') {
+                    steps {
+                        echo 'Running local fortify scan......'
                         sh 'sleep 2'
 
-					}
-		        }
-		        stage('Security Blackduck Scan') {
-		            steps {
-		                echo 'Running OSS Scan ..........'
+                    }
+                }
+                stage('Security Blackduck Scan') {
+                    steps {
+                        echo 'Running OSS Scan ..........'
                         sh 'sleep 5'
 
-		            }
-		        }
-			}
-	    }
-	    stage('Package') {
-              agent any
-              steps {
-                script {
-                  sh 'mvn install'
-                  if ( env.BRANCH_NAME == 'master' ) {
-                    pom = readMavenPom file: 'pom.xml'
-                    TAG = pom.version
-                  } else {
-                    TAG = env.BRANCH_NAME
-                  }
-                  sh "docker build -t ${env.IMAGE}:${TAG} ."
+                    }
                 }
-              }
             }
-        
+        }
+    }
+}
+def prPipeline () {
+    stages {
+        stage('Package') {
+            agent any
+            steps {
+                script {
+                    sh 'mvn install'
+                    if (env.BRANCH_NAME == 'master') {
+                        pom = readMavenPom file: 'pom.xml'
+                        TAG = pom.version
+                    } else {
+                        TAG = env.BRANCH_NAME
+                    }
+                    sh "docker build -t ${env.IMAGE}:${TAG} ."
+                }
+            }
+        }
+
         stage('Deploy to Dev') {
             steps {
-                echo 'Deploying....'               
+                echo 'Deploying....'
                 sh 'docker rm -f petclinic-tomcat-temp || true'
                 sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
             }
@@ -90,34 +112,39 @@ pipeline {
                 }
             }
         }
-        stage ('Validate Deploy to dev') {
+        stage('Validate Deploy to dev') {
             failFast true
             parallel {
-            stage('Healthcheck') {
-                steps {
-                    echo 'Call health check endpoint....'
-                    sh 'sleep 1'
-                }
-            }
+                stage('Healthcheck') {
+                    steps {
+                        echo 'Call health check endpoint....'
+                        sh 'sleep 1'
+                    }
 
-            stage('Run Smoke Tests on dev') {
-                steps {
-                    echo 'Run Smoke tests on dev......'
-                    sh "cd regression-suite"
-                    sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
-                    echo "Should be accessible at http://localhost:18888/petclinic"
                 }
-            }
 
-            stage('API Service Test') {
-                steps {
-                    echo 'Call API test with Postman....'
-                    sh 'sleep 7'
+                stage('Run Smoke Tests on dev') {
+                    steps {
+                        echo 'Run Smoke tests on dev......'
+                        sh "cd regression-suite"
+                        sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
+                        echo "Should be accessible at http://localhost:18888/petclinic"
+                    }
                 }
-            }
+
+                stage('API Service Test') {
+                    steps {
+                        echo 'Call API test with Postman....'
+                        sh 'sleep 7'
+                    }
+                }
             }
         }
-  		
+    }
+}
+
+def deliveryPipeline() {
+    stages {
   		stage('Deploy to Test') {
             steps {
                 echo 'Deploy to test environment....'
