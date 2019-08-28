@@ -10,6 +10,7 @@ pipeline {
 
     stages {
         stage('Build') {
+            agent any
             steps {
                 echo 'Building......'
                 checkout scm
@@ -67,12 +68,11 @@ pipeline {
 
         stage('Package') {
             when { anyOf { branch 'master'; branch 'PR-*' } }
-            agent any
             steps {
                 script {
                     sh 'mvn install'
                     if (env.BRANCH_NAME == 'master') {
-                        pom = readMavenPom file: 'pom.xml'
+                        pom = readFile file: 'pom.xml'
                         TAG = pom.version
                     } else {
                         TAG = env.BRANCH_NAME
