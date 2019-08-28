@@ -30,7 +30,7 @@ pipeline {
         stage('Test coverage validation'){
     		steps {
 		            sh "mvn verify cobertura:cobertura -amd -T 1.5C"
-                    cobertura()
+                    //cobertura()
 				}
 
         }
