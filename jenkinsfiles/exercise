@@ -12,7 +12,6 @@ pipeline {
             steps {
                 echo 'Building......'
                 sh 'mvn -B -DskipTests clean install'
-
             }
         }
         stage('Unit Test') {
@@ -21,7 +20,7 @@ pipeline {
 
 	                sh 'mvn test'
             }
-        	}
+
             post {
                 always {
                     junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
@@ -33,7 +32,7 @@ pipeline {
 		            sh "mvn  check -amd -T 1.5C"
                     cobertura()
 				}
-    		}
+
         }
         stage ('Quality & Security Control') {
         	failFast true
@@ -42,6 +41,7 @@ pipeline {
 		        	steps {
 
 						echo 'Running quality scan with Sonar..... '
+                        sh 'sleep 4'
 		            	
 					}
 		        }
