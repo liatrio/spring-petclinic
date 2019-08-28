@@ -7,25 +7,24 @@ pipeline {
         IMAGE = "liatrio/petclinic-tomcat"
     }
 
-    stages {
-        if (env.BRANCH_NAME == 'master') {
+
+    if (env.BRANCH_NAME == 'master') {
+        devPipeline()
+        prPipeline()
+        deliveryPipeline()
+    } else {
+        if (env.BRANCH_NAME == 'PR-*') {
             devPipeline()
             prPipeline()
-            deliveryPipeline()
-        } else {
-            if (env.BRANCH_NAME == 'PR-*') {
-                devPipeline()
-                prPipeline()
 
-            } else {
-                devPipeline
-            }
+        } else {
+            devPipeline
         }
     }
 }
 
 def devPipeline () {
-
+    stages {
         stage('Build') {
             steps {
                 echo 'Building......'
@@ -80,10 +79,10 @@ def devPipeline () {
                 }
             }
         }
-
+    }
 }
 def prPipeline () {
-
+    stages {
         stage('Package') {
             agent any
             steps {
@@ -141,11 +140,11 @@ def prPipeline () {
                 }
             }
         }
-
+    }
 }
 
 def deliveryPipeline() {
-
+    stages {
   		stage('Deploy to Test') {
             steps {
                 echo 'Deploy to test environment....'
@@ -203,31 +202,19 @@ def deliveryPipeline() {
                 )              
             }
 	    }
-
-        stage ('Change Management & Audit') {
-            failFast true
-            parallel {
-                stage('Create Tag') {
-                    steps {
-                        echo 'Create GitHub Tag....  with...'
-                        sh 'sleep 1'
-
-                    }
-                }
-
-                stage('Create Change Management App Ticket') {
-                    steps {
-                        echo 'create change management ticket in ServiceNow....... '
-                        sh 'sleep 4'
-                    }
-                }
-
-                stage('Create Release notes') {
-                    steps {
-                        echo 'create release notes from jira....... '
-                        sh 'sleep 4'
-                    }
-                }
+	    
+	    stage('Create Tag') {
+            steps {
+                echo 'Create GitHub Tag....  with...'
+                sh 'sleep 1'
+                            
+            }
+        }
+        
+        stage('Create Change Management App Ticket') {
+            steps {
+                echo 'create change management ticket in ServiceNow....... '
+                sh 'sleep 4'
             }
         }
         
@@ -315,5 +302,5 @@ def deliveryPipeline() {
   		
   		}
   		
-
+    }
 }
