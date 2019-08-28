@@ -5,6 +5,7 @@ pipeline {
     environment {
         GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIALS')
         IMAGE = "liatrio/petclinic-tomcat"
+        SONARQUBE_CREDENTIAL = credentials('SONARQUBE_CREDENTIAL')
     }
 
 
