@@ -12,6 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building......'
+                checkout scm
                 sh 'mvn -B -DskipTests clean install'
             }
         }
