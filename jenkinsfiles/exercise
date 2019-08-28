@@ -8,22 +8,6 @@ pipeline {
     }
 
 
-    if (env.BRANCH_NAME == 'master') {
-        devPipeline()
-        prPipeline()
-        deliveryPipeline()
-    } else {
-        if (env.BRANCH_NAME == 'PR-*') {
-            devPipeline()
-            prPipeline()
-
-        } else {
-            devPipeline
-        }
-    }
-}
-
-def devPipeline () {
     stages {
         stage('Build') {
             steps {
@@ -79,11 +63,9 @@ def devPipeline () {
                 }
             }
         }
-    }
-}
-def prPipeline () {
-    stages {
+
         stage('Package') {
+            when { anyOf { branch 'master'; branch 'PR-*' } }
             agent any
             steps {
                 script {
@@ -100,6 +82,7 @@ def prPipeline () {
         }
 
         stage('Deploy to Dev') {
+            when { anyOf { branch 'master'; branch 'PR-*' } }
             steps {
                 echo 'Deploying....'
                 sh 'docker rm -f petclinic-tomcat-temp || true'
@@ -113,6 +96,7 @@ def prPipeline () {
             }
         }
         stage('Validate Deploy to dev') {
+            when { anyOf { branch 'master'; branch 'PR-*' } }
             failFast true
             parallel {
                 stage('Healthcheck') {
@@ -140,19 +124,17 @@ def prPipeline () {
                 }
             }
         }
-    }
-}
 
-def deliveryPipeline() {
-    stages {
-  		stage('Deploy to Test') {
+        stage('Deploy to Test') {
+            when { anyOf { branch 'master' } }
             steps {
                 echo 'Deploy to test environment....'
                 sh 'sleep 6'
             }
         }
 
-        stage ('Validate Deploy to test') {
+        stage('Validate Deploy to test') {
+            when { anyOf { branch 'master' } }
             failFast true
             parallel {
                 stage('Healthcheck test') {
@@ -173,9 +155,10 @@ def deliveryPipeline() {
         }
 
 
-        
-        stage ('Acceptance') {
-        	failFast true
+
+        stage('Acceptance') {
+            when { branch 'master' }
+            failFast true
             parallel {
 		        
 		        stage('Run Functional Tests'){
@@ -196,29 +179,43 @@ def deliveryPipeline() {
 	    }
 	    
 	    stage('Deploy to prod?'){
+            when {  branch 'master' }
             steps {
                 input(
                     message: 'Do you want to publish a new version of the library in A?'
                 )              
             }
 	    }
-	    
-	    stage('Create Tag') {
-            steps {
-                echo 'Create GitHub Tag....  with...'
-                sh 'sleep 1'
-                            
+
+        stage('Release Management & Audit') {
+            when { branch 'master' }
+            failFast true
+            parallel {
+                stage('Create Tag') {
+                    steps {
+                        echo 'Create GitHub Tag....  with...'
+                        sh 'sleep 1'
+
+                    }
+                }
+
+                stage('Create Change Management App Ticket') {
+                    steps {
+                        echo 'create change management ticket in ServiceNow....... '
+                        sh 'sleep 4'
+                    }
+                }
+
+                stage('Create release notes') {
+                    steps {
+                        echo 'create release notes....... '
+                        sh 'sleep 4'
+                    }
+                }
             }
         }
-        
-        stage('Create Change Management App Ticket') {
-            steps {
-                echo 'create change management ticket in ServiceNow....... '
-                sh 'sleep 4'
-            }
-        }
-        
   		stage('Deploy to Prod - Pool A Blue') {
+            when {  branch 'master'  }
             steps {
                 echo 'Deploy to prod A Blue environment....'
                  echo 'Validate Deploy with ......executeHealthCheck'
@@ -227,6 +224,7 @@ def deliveryPipeline() {
         }
 
         stage('Run Smoke Tests on A Blue') {
+            when {  branch 'master'  }
             steps {
                 echo 'Run Smoke tests on prod A Blue......'
                 sh 'sleep 2'
@@ -234,6 +232,7 @@ def deliveryPipeline() {
         }
 
         stage('Deploy to Prod - Pool A Green') {
+            when {  branch 'master'  }
             steps {
                 echo 'Deploy to prod A Green environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
@@ -241,7 +240,8 @@ def deliveryPipeline() {
             }
         }
 
-        stage('Run Smoke Tests on A Grenn') {
+        stage('Run Smoke Tests on A Green') {
+            when {  branch 'master'  }
             steps {
                 echo 'Run Smoke tests on prod A Green......'
                 sh 'sleep 2'
@@ -249,6 +249,7 @@ def deliveryPipeline() {
         }
 
         stage('Notify Build Status on A') {
+            when {  branch 'master'  }
             steps {
                 echo 'Notify Build Status on Slack.......'
                 sh 'sleep 1'
@@ -257,6 +258,7 @@ def deliveryPipeline() {
         }
 
         stage('Deploy to prod B?'){
+            when {  branch 'master'  }
             steps {
                 input(
                         message: 'Do you want to publish a new version of the library on B?'
@@ -265,6 +267,7 @@ def deliveryPipeline() {
         }
 
         stage('Deploy to Prod - Pool B Blue') {
+            when {  branch 'master'  }
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
@@ -273,13 +276,15 @@ def deliveryPipeline() {
         }
 
         stage('Run Smoke Tests on B Blue') {
+            when {  branch 'master'  }
             steps {
                 echo 'Run Smoke tests on prod B Green......'
                 sh 'sleep 2'
             }
         }
 
-        stage('Deploy to Prod - Pool B Grenn') {
+        stage('Deploy to Prod - Pool B Green') {
+            when {  branch 'master'  }
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
@@ -287,20 +292,22 @@ def deliveryPipeline() {
             }
         }
 
-        stage('Run Smoke Tests on B Green') {\
+        stage('Run Smoke Tests on B Green') {
+            when {  branch 'master'  }
             steps {
                 echo 'Run Smoke tests on prod B Green......'
                 sh 'sleep 2'
             }
         }
-        
+
   		stage('Notify Build Status on B') {
+            when {  branch 'master'  }
   			steps {
                 echo 'Notify Build Status on Slack.......'
                 sh 'sleep 1'
             }
-  		
+
   		}
-  		
+
     }
 }
