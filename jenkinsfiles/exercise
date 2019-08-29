@@ -73,10 +73,11 @@ pipeline {
         }
 
         stage('Deploy to Dev/Local') {
-            when { anyOf { branch 'PR-*' } }
+            when { anyOf { branch 'master';branch 'PR-*' } }
             steps {
                 echo 'Deploying....'
                 sh 'docker rm -f petclinic-tomcat-temp || true'
+                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
                 sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
             }
             post {
@@ -87,7 +88,7 @@ pipeline {
             }
         }
         stage('Validate Deploy to Dev/Local') {
-            when { anyOf { branch 'PR-*' } }
+            when { anyOf { branch 'master';branch 'PR-*' } }
             failFast true
             parallel {
 
@@ -97,6 +98,8 @@ pipeline {
                         sh "cd regression-suite"
                         sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
                         echo "Should be accessible at http://localhost:18888/petclinic"
+                        sh 'docker rm -f petclinic-tomcat-temp || true'
+                        sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
                     }
                 }
 
