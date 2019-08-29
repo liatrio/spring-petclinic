@@ -137,7 +137,8 @@ pipeline {
 
         stage('Validate Deploy to test') {
             when { anyOf { branch 'master'; branch 'release-*' } }
-
+            failFast true
+            parallel {
                 stage('Run Sanity Checks on test') {
                     steps {
                         echo 'Run Sanity Checks on test......'
@@ -145,7 +146,12 @@ pipeline {
                     }
                 }
 
-
+                stage('API Service Test') {
+                    steps {
+                        echo 'Call API test with Postman....'
+                        sh 'sleep 7'
+                    }
+                }
         }
 
 
@@ -153,13 +159,6 @@ pipeline {
             when { branch 'master' }
             failFast true
             parallel {
-
-                stage('API Service Test') {
-                    steps {
-                        echo 'Call API test with Postman....'
-                        sh 'sleep 7'
-                    }
-                }
 
                 stage('Run Functional Tests'){
                     steps {
