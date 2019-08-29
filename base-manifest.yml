@@ -1,5 +1,5 @@
 ---
-memory: 512M
+memory: 1024M
 random-route: false
 path: ./target/petclinic.war
 instances: 1

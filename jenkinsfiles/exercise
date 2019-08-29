@@ -72,23 +72,12 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            when { anyOf { branch 'master'; branch 'PR-*' } }
-            steps {
-                script {
-                    sh 'mvn install'
-                    TAG = env.BRANCH_NAME
-                    sh "docker build -t ${env.IMAGE}:${TAG} ."
-                }
-            }
-        }
-
         stage('Deploy to Dev/Local') {
             when { anyOf { branch 'PR-*' } }
             steps {
                 echo 'Deploying....'
-                sh 'docker rm -f petclinic-tomcat-temp || true'
-                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
+                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-${env.BRANCH_NAME} ${env.IMAGE}:${TAG}"
             }
             post {
                 always {
@@ -116,6 +105,17 @@ pipeline {
                         echo 'Call API test with Postman....'
                         sh 'sleep 7'
                     }
+                }
+            }
+        }
+
+        stage('Package') {
+            when { anyOf { branch 'master'; branch 'release-*' } }
+            steps {
+                script {
+                    sh 'mvn install'
+                    TAG = env.BRANCH_NAME
+                    sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
             }
         }
