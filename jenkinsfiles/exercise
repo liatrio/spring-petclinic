@@ -152,8 +152,8 @@ pipeline {
                         sh 'sleep 7'
                     }
                 }
+            }
         }
-
 
         stage('Acceptance') {
             when { branch 'master' }
