@@ -83,8 +83,8 @@ pipeline {
             }
         }
 
-        stage('Deploy to Dev') {
-            when { anyOf { branch 'master'; branch 'PR-*' } }
+        stage('Deploy to Dev/Local') {
+            when { anyOf { branch 'PR-*' } }
             steps {
                 echo 'Deploying....'
                 sh 'docker rm -f petclinic-tomcat-temp || true'
@@ -97,17 +97,10 @@ pipeline {
                 }
             }
         }
-        stage('Validate Deploy to dev') {
-            when { anyOf { branch 'master'; branch 'PR-*' } }
+        stage('Validate Deploy to Dev/Local') {
+            when { anyOf { branch 'PR-*' } }
             failFast true
             parallel {
-                stage('Healthcheck') {
-                    steps {
-                        echo 'Call health check endpoint....'
-                        sh 'sleep 1'
-                    }
-
-                }
 
                 stage('Run Smoke Tests on dev') {
                     steps {
@@ -128,15 +121,22 @@ pipeline {
         }
 
         stage('Deploy to Test') {
-            when { anyOf { branch 'master' } }
+            when { anyOf { branch 'master'; branch 'release-*' } }
             steps {
                 echo 'Deploy to test environment....'
-                sh 'sleep 6'
+                pushToCloudFoundry(
+                        target: 'api.run.pivotal.io',
+                        organization: 'mattos',
+                        cloudSpace: 'test',
+                        credentialsId: 'PCF_CREDENTIAL',
+                        manifestChoice: [manifestFile: './base-manifest.yml']
+                )
+
             }
         }
 
         stage('Validate Deploy to test') {
-            when { anyOf { branch 'master' } }
+            when { anyOf { branch 'master'; branch 'release-*' } }
             failFast true
             parallel {
                 stage('Healthcheck test') {
