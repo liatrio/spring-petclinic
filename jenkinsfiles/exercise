@@ -91,9 +91,9 @@ pipeline {
             failFast true
             parallel {
 
-                stage('Run Smoke Tests on dev') {
+                stage('Run Sanity Checks on dev') {
                     steps {
-                        echo 'Run Smoke tests on dev......'
+                        echo 'Run Sanity Checks on dev......'
                         sh "cd regression-suite"
                         sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
                         echo "Should be accessible at http://localhost:18888/petclinic"
@@ -137,23 +137,15 @@ pipeline {
 
         stage('Validate Deploy to test') {
             when { anyOf { branch 'master'; branch 'release-*' } }
-            failFast true
-            parallel {
-                stage('Healthcheck test') {
-                    steps {
-                        echo 'Call health check endpoint....'
-                        sh 'sleep 1'
-                    }
-                }
 
-                stage('Run Smoke Tests on test') {
+                stage('Run Sanity Checks on test') {
                     steps {
-                        echo 'Run Smoke tests on test......'
+                        echo 'Run Sanity Checks on test......'
                         sh 'sleep 4'
                     }
                 }
 
-            }
+
         }
 
 
@@ -161,6 +153,13 @@ pipeline {
             when { branch 'master' }
             failFast true
             parallel {
+
+                stage('API Service Test') {
+                    steps {
+                        echo 'Call API test with Postman....'
+                        sh 'sleep 7'
+                    }
+                }
 
                 stage('Run Functional Tests'){
                     steps {
@@ -229,7 +228,13 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                sh 'sleep 4'
+                pushToCloudFoundry(
+                        target: 'api.run.pivotal.io',
+                        organization: 'mattos',
+                        cloudSpace: 'production',
+                        credentialsId: 'PCF_CREDENTIAL',
+                        manifestChoice: [manifestFile: './prod-manifest.yml']
+                )
             }
         }
 
