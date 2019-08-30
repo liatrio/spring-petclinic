@@ -130,7 +130,7 @@ pipeline {
                 pushToCloudFoundry(
                         target: 'api.run.pivotal.io',
                         organization: 'mattos',
-                        cloudSpace: 'development',
+                        cloudSpace: 'test',
                         credentialsId: 'PCF_CREDENTIAL',
                         manifestChoice: [manifestFile: './base-manifest.yml']
                 )
