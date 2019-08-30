@@ -3,9 +3,9 @@
 pipeline {
     agent any
     environment {
-        GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIALS')
-        IMAGE = "liatrio/petclinic-tomcat"
+        GITHUB_CREDENTIALS = credentials('LEO_GITHUB_CREDENTIAL')
         SONARQUBE_CREDENTIAL = credentials('SONARQUBE_CREDENTIAL')
+        IMAGE = "liatrio/petclinic-tomcat"
     }
 
 
