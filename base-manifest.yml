@@ -3,8 +3,8 @@ memory: 1024M
 random-route: false
 path: ./target/petclinic.war
 instances: 1
-#domain: cfapps.io
+domain: cfapps.io
 #health-check-type: http
 
 applications:
- - name: pivotal-test
+ - name: leo-pivotal-test
