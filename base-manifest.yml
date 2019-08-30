@@ -7,4 +7,4 @@ domain: cfapps.io
 #health-check-type: http
 
 applications:
- - name: pivotal-dev
+ - name: pivotal-test
