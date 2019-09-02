@@ -120,6 +120,8 @@ pipeline {
                     TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
+                nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
+
             }
         }
 
@@ -237,7 +239,7 @@ pipeline {
                             organization: 'mattos',
                             cloudSpace: 'production',
                             credentialsId: 'PCF_CREDENTIAL',
-                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-green']
+                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-blue', noroute: 'true']
                     )
                 }
             }
@@ -255,7 +257,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to new version......'
-                sh 'sleep 2'
+                sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
             }
         }
 
@@ -263,7 +265,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to remove old version......'
-                sh 'sleep 2'
+                sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
             }
         }
 
@@ -272,7 +274,15 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Green environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                sh 'sleep 4'
+                timeout(time: 200, unit: 'SECONDS') {
+                    pushToCloudFoundry(
+                            target: 'api.run.pivotal.io',
+                            organization: 'mattos',
+                            cloudSpace: 'production',
+                            credentialsId: 'PCF_CREDENTIAL',
+                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-green', noroute: 'true']
+                    )
+                }
             }
         }
 
@@ -288,7 +298,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to add blue and green......'
-                sh 'sleep 2'
+                sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
             }
         }
 
@@ -296,7 +306,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to green......'
-                sh 'sleep 2'
+                sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
             }
         }
 
