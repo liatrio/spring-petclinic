@@ -1,8 +1,14 @@
 ---
-inherit: base-manifest.yml
+memory: 1024M
+random-route: false
+path: ./target/petclinic.war
+instances: 1
+domain: cfapps.io
+routes:
+  - leo-exercise.cfapps.io
 
 applications:
  - name: leo-pivotal-prod
    # Load balance between 2 instances instead of 1
    instances: 2
-   domain: prod.cfapps.io
+
