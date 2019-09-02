@@ -127,14 +127,15 @@ pipeline {
             when { anyOf { branch 'master'; branch 'release-*' } }
             steps {
                 echo 'Deploy to test environment....'
-                pushToCloudFoundry(
-                        target: 'api.run.pivotal.io',
-                        organization: 'mattos',
-                        cloudSpace: 'test',
-                        credentialsId: 'PCF_CREDENTIAL',
-                        manifestChoice: [manifestFile: './base-manifest.yml']
-                )
-
+                timeout(time: 200, unit: 'SECONDS') {
+                    pushToCloudFoundry(
+                            target: 'api.run.pivotal.io',
+                            organization: 'mattos',
+                            cloudSpace: 'test',
+                            credentialsId: 'PCF_CREDENTIAL',
+                            manifestChoice: [manifestFile: './base-manifest.yml']
+                    )
+                }
             }
         }
 
@@ -230,13 +231,15 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                pushToCloudFoundry(
-                        target: 'api.run.pivotal.io',
-                        organization: 'mattos',
-                        cloudSpace: 'production',
-                        credentialsId: 'PCF_CREDENTIAL',
-                        manifestChoice: [manifestFile: './prod-manifest.yml']
-                )
+                timeout(time: 200, unit: 'SECONDS') {
+                    pushToCloudFoundry(
+                            target: 'api.run.pivotal.io',
+                            organization: 'mattos',
+                            cloudSpace: 'production',
+                            credentialsId: 'PCF_CREDENTIAL',
+                            manifestChoice: [manifestFile: './prod-manifest.yml']
+                    )
+                }
             }
         }
 
