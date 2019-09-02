@@ -248,6 +248,22 @@ pipeline {
             }
         }
 
+        stage('Update Load Balancer to Include Blue') {
+            when {  branch 'master'  }
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                sh 'sleep 2'
+            }
+        }
+
+        stage('Update Load Balancer to remove Green') {
+            when {  branch 'master'  }
+            steps {
+                echo 'Changing routing rules to point to remove old version......'
+                sh 'sleep 2'
+            }
+        }
+
         stage('Deploy to Prod - Pool A Green') {
             when {  branch 'master'  }
             steps {
@@ -261,6 +277,22 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Run Smoke tests on prod A Green......'
+                sh 'sleep 2'
+            }
+        }
+
+        stage('Update Load Balancer to Include Green') {
+            when {  branch 'master'  }
+            steps {
+                echo 'Changing routing rules to add blue and green......'
+                sh 'sleep 2'
+            }
+        }
+
+        stage('Update Load Balancer to remove Blue') {
+            when {  branch 'master'  }
+            steps {
+                echo 'Changing routing rules to point to green......'
                 sh 'sleep 2'
             }
         }
