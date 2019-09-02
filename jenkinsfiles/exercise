@@ -115,11 +115,11 @@ pipeline {
         stage('Package') {
             when { anyOf { branch 'master'; branch 'release-*' } }
             steps {
-                script {
-                    sh 'mvn install'
-                    TAG = env.BRANCH_NAME
-                    sh "docker build -t ${env.IMAGE}:${TAG} ."
-                }
+                //script {
+                    //sh 'mvn install'
+                  //  TAG = env.BRANCH_NAME
+                //    sh "docker build -t ${env.IMAGE}:${TAG} ."
+              //  }
                 nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: '/target/spring-petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
