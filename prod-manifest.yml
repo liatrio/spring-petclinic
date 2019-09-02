@@ -3,7 +3,6 @@ memory: 1024M
 random-route: false
 path: ./target/petclinic.war
 instances: 1
-domain: cfapps.io
 routes:
   - route: leo-exercise.cfapps.io
 
