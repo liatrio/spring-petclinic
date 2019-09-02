@@ -5,7 +5,7 @@ path: ./target/petclinic.war
 instances: 1
 domain: cfapps.io
 routes:
-  - leo-exercise-test.cfapps.io
+  - route: leo-exercise-test.cfapps.io
 #health-check-type: http
 
 applications:

@@ -5,7 +5,7 @@ path: ./target/petclinic.war
 instances: 1
 domain: cfapps.io
 routes:
-  - leo-exercise.cfapps.io
+  - route: leo-exercise.cfapps.io
 
 applications:
  - name: leo-pivotal-prod
