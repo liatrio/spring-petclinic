@@ -237,7 +237,7 @@ pipeline {
                             organization: 'mattos',
                             cloudSpace: 'production',
                             credentialsId: 'PCF_CREDENTIAL',
-                            manifestChoice: [manifestFile: './prod-manifest.yml']
+                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-green']
                     )
                 }
             }
