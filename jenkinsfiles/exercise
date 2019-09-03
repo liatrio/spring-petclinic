@@ -63,14 +63,14 @@ pipeline {
                 stage('Security Fortify Scan') {
                     steps {
                         echo 'Running local fortify scan......'
-                        sh 'sleep 2'
+                        sh 'sleep 1'
 
                     }
                 }
                 stage('Security Blackduck Scan') {
                     steps {
                         echo 'Running OSS Scan ..........'
-                        sh 'sleep 5'
+                        sh 'sleep 2'
 
                     }
                 }
@@ -111,7 +111,7 @@ pipeline {
                 stage('API Service Test') {
                     steps {
                         echo 'Call API test with Postman....'
-                        sh 'sleep 7'
+                        sh 'sleep 2'
                     }
                 }
             }
@@ -153,14 +153,14 @@ pipeline {
                 stage('Run Sanity Checks on test') {
                     steps {
                         echo 'Run Sanity Checks on test......'
-                        sh 'sleep 4'
+                        sh 'sleep 2'
                     }
                 }
 
                 stage('API Service Test') {
                     steps {
                         echo 'Call API test with Postman....'
-                        sh 'sleep 7'
+                        sh 'sleep 3'
                     }
                 }
             }
@@ -174,13 +174,13 @@ pipeline {
                 stage('Run Functional Tests'){
                     steps {
                         echo 'Run functional tests........'
-                        sh 'sleep 8'
+                        sh 'sleep 1'
                     }
                 }
                 stage('Run Performance Tests'){
                     steps {
                         echo 'Run performance tests with executePerformanceJMeterTests...........'
-                        sh 'sleep 10'
+                        sh 'sleep 3'
                     }
                 }
 
@@ -221,14 +221,14 @@ pipeline {
                 stage('Create Change Management App Ticket') {
                     steps {
                         echo 'create change management ticket in ServiceNow....... '
-                        sh 'sleep 4'
+                        sh 'sleep 2'
                     }
                 }
 
                 stage('Create release notes') {
                     steps {
                         echo 'create release notes....... '
-                        sh 'sleep 4'
+                        sh 'sleep 2'
                     }
                 }
             }
@@ -260,17 +260,38 @@ pipeline {
 
         stage('Update Load Balancer to Include Blue') {
             when {  branch 'master'  }
+            agent {
+                docker {
+                    image 'liatrio/cf-cli'
+                    args  '-u 0:0'
+                }
+            }
             steps {
                 echo 'Changing routing rules to point to new version......'
-                //sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+                withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
+                    sh 'cf api https://api.run.pivotal.io && cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+
+                }
             }
+
         }
 
         stage('Update Load Balancer to remove Green') {
             when {  branch 'master'  }
+            agent {
+                docker {
+                    image 'liatrio/cf-cli'
+                    args  '-u 0:0'
+                }
+            }
             steps {
-                echo 'Changing routing rules to point to remove old version......'
-                //sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
+                echo 'Changing routing rules to point to new version......'
+                withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
+                    sh 'cf api https://api.run.pivotal.io && cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
+
+                }
             }
         }
 
@@ -301,17 +322,38 @@ pipeline {
 
         stage('Update Load Balancer to Include Green') {
             when {  branch 'master'  }
-            steps {
-                echo 'Changing routing rules to add blue and green......'
-               // sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
+            agent {
+                docker {
+                    image 'liatrio/cf-cli'
+                    args  '-u 0:0'
+                }
             }
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
+                    sh 'cf api https://api.run.pivotal.io && cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
+
+                }
+            }
+
         }
 
         stage('Update Load Balancer to remove Blue') {
             when {  branch 'master'  }
+            agent {
+                docker {
+                    image 'liatrio/cf-cli'
+                    args  '-u 0:0'
+                }
+            }
             steps {
-                echo 'Changing routing rules to point to green......'
-               // sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+                echo 'Changing routing rules to point to new version......'
+                withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
+                    sh 'cf api https://api.run.pivotal.io && cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+
+                }
             }
         }
 
@@ -338,7 +380,7 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                sh 'sleep 4'
+                sh 'sleep 2'
             }
         }
 
@@ -355,7 +397,7 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                sh 'sleep 4'
+                sh 'sleep 2'
             }
         }
 
