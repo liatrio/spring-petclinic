@@ -55,7 +55,7 @@ pipeline {
                         //}
                         sh 'mvn sonar:sonar \\\n' +
                                 '  -Dsonar.projectKey=petclinic \\\n' +
-                                '  -Dsonar.host.url=http://95826f30.ngrok.io:9000 \\\n' +
+                                '  -Dsonar.host.url=http://eb293701.ngrok.io:9000 \\\n' +
                                 '  -Dsonar.login=908d76c8db37fabca5051bf0e3200d1d704dee97'
 
                     }
