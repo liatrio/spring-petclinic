@@ -14,7 +14,6 @@ pipeline {
     stages {
 
         stage('Build') {
-            agent any
             steps {
                 echo 'Building......'
                 checkout scm
@@ -32,15 +31,9 @@ pipeline {
             post {
                 always {
                     junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                    echo 'Test coverage validation..... here could have a check if the coverage is still good'
                 }
             }
-        }
-        stage('Test coverage validation') {
-            steps {
-                sh "mvn verify cobertura:cobertura -amd -T 1.5C"
-                //cobertura()
-            }
-
         }
 
         stage('Quality & Security Control') {
@@ -79,21 +72,66 @@ pipeline {
             }
         }
 
-        stage('Deploy to Dev/Local') {
-            when { anyOf { branch 'PR-*' } }
+        stage('Package') {
+            when { anyOf { branch 'LIAT-*' } }
+            steps {
+                echo 'Generating package to store on docker repo or nexus'
+                /*script {
+                    sh 'mvn -B -DskipTests install'
+                    TAG = env.BRANCH_NAME
+                    sh "docker build -t ${env.IMAGE}:${TAG} ."
+                }*/
+                sh 'sleep 2'
+            }
+        }
+
+        stage('Deploy to Local') {
+            when { anyOf { branch 'LIAT-*' } }
             steps {
                 echo 'Deploying....'
-                sh 'docker rm -f petclinic-tomcat-temp || true'
-                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
-                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                //sh 'docker rm -f petclinic-tomcat-temp || true'
+                //sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                sh 'sleep 2'
             }
             post {
                 always {
                     echo 'Call health check endpoint....'
-                    sh 'sleep 2'
+                    sh 'sleep 1'
                 }
             }
         }
+
+        stage('Run Sanity Checks on local') {
+            when { anyOf { branch 'LIAT-*' } }
+            steps {
+                echo 'Run Sanity Checks on local......'
+                /*sh "cd regression-suite"
+                sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
+                echo "Should be accessible at http://localhost:18888/petclinic"
+                sh 'docker rm -f petclinic-tomcat-temp || true'
+                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
+                */
+                sh 'sleep 2'
+            }
+        }
+
+        stage('Deploy to Dev') {
+            when {  anyOf {branch 'PR-*' } }
+            steps {
+                echo 'Deploy to prod A Green environment....'
+                echo 'Validate Deploy with ......executeHealthCheck'
+                timeout(time: 400, unit: 'SECONDS') {
+                    pushToCloudFoundry(
+                            target: 'api.run.pivotal.io',
+                            organization: 'mattos',
+                            cloudSpace: 'development',
+                            credentialsId: 'PCF_CREDENTIAL',
+                            manifestChoice: [manifestFile: './dev-manifest.yml']
+                    )
+                }
+            }
+        }
+
         stage('Validate Deploy to Dev/Local') {
             when { anyOf { branch 'PR-*' } }
             failFast true
@@ -102,11 +140,7 @@ pipeline {
                 stage('Run Sanity Checks on dev') {
                     steps {
                         echo 'Run Sanity Checks on dev......'
-                        sh "cd regression-suite"
-                        sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
-                        echo "Should be accessible at http://localhost:18888/petclinic"
-                        sh 'docker rm -f petclinic-tomcat-temp || true'
-                        sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
+                        sh 'sleep 1'
                     }
                 }
 
@@ -119,19 +153,10 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Publish to Nexus') {
             when { anyOf { branch 'master' } }
             steps {
-                echo 'Generating package to store on docker repo or nexus'
-                script {
-                    if ( env.BRANCH_NAME == 'master' ) {
-                        pom = readMavenPom file: 'pom.xml'
-                        TAG = pom.version
-                    } else {
-                        TAG = env.BRANCH_NAME
-                    }
-                    sh "docker build -t ${env.IMAGE}:${TAG} ."
-                }
+                echo 'Generating package to store nexus'
                 //nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
