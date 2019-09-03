@@ -77,8 +77,8 @@ pipeline {
             when { anyOf { branch 'LIAT-*' } }
             steps {
                 echo 'Deploying....'
+                sh "docker build -t ${env.IMAGE}:${env.BRANCH_NAME} ."
                 sh 'docker rm -f petclinic-tomcat-temp || true'
-                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
                 sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${env.BRANCH_NAME}"
             }
             post {
