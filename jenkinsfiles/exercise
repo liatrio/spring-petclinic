@@ -9,6 +9,25 @@ pipeline {
         IMAGE = "liatrio/petclinic-tomcat"
     }
 
+    stage('test') {
+        when {  branch 'master'  }
+        agent {
+            docker {
+                image 'liatrio/cf-cli'
+                args  '-u 0:0'
+            }
+        }
+        steps {
+            echo 'Changing routing rules to point to new version......'
+            withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
+                sh 'cf api https://api.run.pivotal.io '
+                sh 'cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+
+            }
+        }
+
+    }
 
     stages {
         stage('Build') {
