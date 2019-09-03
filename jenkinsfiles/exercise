@@ -79,8 +79,8 @@ pipeline {
             }
         }
 
-        stage('Deploy to Dev/Local') {
-            when { anyOf { branch 'PR-*' } }
+        stage('Deploy to Local') {
+            when { anyOf { branch 'LIAT-*' } }
             steps {
                 echo 'Deploying....'
                 sh 'docker rm -f petclinic-tomcat-temp || true'
@@ -94,6 +94,38 @@ pipeline {
                 }
             }
         }
+
+
+
+        stage('Run Sanity Checks on dev') {
+            when { anyOf { branch 'LIAT-*' } }
+            steps {
+                echo 'Run Sanity Checks on dev......'
+                sh "cd regression-suite"
+                sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
+                echo "Should be accessible at http://localhost:18888/petclinic"
+                sh 'docker rm -f petclinic-tomcat-temp || true'
+                sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
+            }
+        }
+
+        stage('Deploy to Dev') {
+            when {  branch 'PR-*'  }
+            steps {
+                echo 'Deploy to prod A Green environment....'
+                echo 'Validate Deploy with ......executeHealthCheck'
+                timeout(time: 400, unit: 'SECONDS') {
+                    pushToCloudFoundry(
+                            target: 'api.run.pivotal.io',
+                            organization: 'mattos',
+                            cloudSpace: 'development',
+                            credentialsId: 'PCF_CREDENTIAL',
+                            manifestChoice: [manifestFile: './dev-manifest.yml']
+                    )
+                }
+            }
+        }
+
         stage('Validate Deploy to Dev/Local') {
             when { anyOf { branch 'PR-*' } }
             failFast true
@@ -102,11 +134,7 @@ pipeline {
                 stage('Run Sanity Checks on dev') {
                     steps {
                         echo 'Run Sanity Checks on dev......'
-                        sh "cd regression-suite"
-                        sh "mvn clean -B test -DPETCLINIC_URL=http://dev-petclinic:8080/petclinic/"
-                        echo "Should be accessible at http://localhost:18888/petclinic"
-                        sh 'docker rm -f petclinic-tomcat-temp || true'
-                        sh 'docker rm -f petclinic-tomcat-${env.BRANCH_NAME} || true'
+                        sh 'sleep 1'
                     }
                 }
 
