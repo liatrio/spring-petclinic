@@ -53,10 +53,10 @@ pipeline {
                         //withSonarQubeEnv(installationName: 'SonarQubeLeo', credentialsId: 'SONARQUBE_SECRET') {
                         //    sh 'mvn sonar:sonar -Dsonar.projectKey=petclinic'
                         //}
-                        sh 'mvn sonar:sonar \\\n' +
-                                '  -Dsonar.projectKey=petclinic \\\n' +
-                                '  -Dsonar.host.url=http://eb293701.ngrok.io:9000 \\\n' +
-                                '  -Dsonar.login=908d76c8db37fabca5051bf0e3200d1d704dee97'
+                        //sh 'mvn sonar:sonar \\\n' +
+                        //        '  -Dsonar.projectKey=petclinic \\\n' +
+                        //        '  -Dsonar.host.url=http://eb293701.ngrok.io:9000 \\\n' +
+                        //        '  -Dsonar.login=908d76c8db37fabca5051bf0e3200d1d704dee97'
 
                     }
                 }
