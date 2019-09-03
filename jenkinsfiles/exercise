@@ -7,7 +7,7 @@ pipeline {
         SONARQUBE_SECRET = credentials('SONARQUBE_SECRET')
 
         IMAGE = "liatrio/petclinic-tomcat"
-        
+
     }
 
 
@@ -24,7 +24,6 @@ pipeline {
             }
             steps {
                 echo 'Changing routing rules to point to new version......'
-                withEnv
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
                     sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o mattos -s production"
