@@ -77,12 +77,12 @@ pipeline {
             when { anyOf { branch 'LIAT-*' } }
             steps {
                 echo 'Generating package to store on docker repo or nexus'
-                script {
+                /*script {
                     sh 'mvn -B -DskipTests install'
                     TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
-                }
-
+                }*/
+                sh 'sleep 2'
             }
         }
 
@@ -90,13 +90,14 @@ pipeline {
             when { anyOf { branch 'LIAT-*' } }
             steps {
                 echo 'Deploying....'
-                sh 'docker rm -f petclinic-tomcat-temp || true'
-                sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                //sh 'docker rm -f petclinic-tomcat-temp || true'
+                //sh "docker run -d -p 9966:8080 --name petclinic-tomcat-temp ${env.IMAGE}:${TAG}"
+                sh 'sleep 2'
             }
             post {
                 always {
                     echo 'Call health check endpoint....'
-                    sh 'sleep 2'
+                    sh 'sleep 1'
                 }
             }
         }
