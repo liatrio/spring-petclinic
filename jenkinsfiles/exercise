@@ -49,7 +49,7 @@ pipeline {
 
                         echo 'Running quality scan with Sonar..... '
                         sh 'sleep 4'
-                        //withSonarQubeEnv(installationName: 'SonarQubeLeo', credentialsId: 'SONARQUBE_CREDENTIAL') {
+                        //withSonarQubeEnv(installationName: 'SonarQubeLeo', credentialsId: 'SONARQUBE_SECRET') {
                         //    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar -f pom.xml'
                         //}
 
@@ -120,7 +120,7 @@ pipeline {
                     TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
-                //nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: '/target/spring-petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
+                nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
         }
@@ -369,6 +369,12 @@ pipeline {
                 sh 'sleep 1'
             }
 
+        }
+
+        stage('clean up'){
+            steps {
+                cleanWs()
+            }
         }
 
     }
