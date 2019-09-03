@@ -10,21 +10,6 @@ pipeline {
 
 
     stages {
-        stage('test') {
-            steps {
-                withCfCli(
-                        apiEndpoint: 'https://api.cf-domain.example.com',
-                        skipSslValidation: false,
-                        cloudFoundryCliVersion: 'Cloud Foundry CLI (built-in)',
-                        credentialsId: 'cf-user-cleclerc-credentials',
-                        organization: 'my-org',
-                        space: 'development') {
-
-                    sh 'cf push my-app-name -p target/my-app*.war'
-
-                }
-            }
-        }
         stage('Build') {
             agent any
             steps {
@@ -135,7 +120,7 @@ pipeline {
                     TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
-                nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
+                //nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
         }
@@ -272,7 +257,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to new version......'
-                sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+                //sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
             }
         }
 
@@ -280,7 +265,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to remove old version......'
-                sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
+                //sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
             }
         }
 
@@ -295,7 +280,7 @@ pipeline {
                             organization: 'mattos',
                             cloudSpace: 'production',
                             credentialsId: 'PCF_CREDENTIAL',
-                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-green', noroute: 'true']
+                            manifestChoice: [manifestFile: './prod-manifest.yml', application: 'leo-pivotal-prod-green']
                     )
                 }
             }
@@ -313,7 +298,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to add blue and green......'
-                sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
+               // sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
             }
         }
 
@@ -321,7 +306,7 @@ pipeline {
             when {  branch 'master'  }
             steps {
                 echo 'Changing routing rules to point to green......'
-                sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
+               // sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
             }
         }
 
