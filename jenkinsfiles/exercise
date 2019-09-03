@@ -7,10 +7,7 @@ pipeline {
         SONARQUBE_SECRET = credentials('SONARQUBE_SECRET')
 
         IMAGE = "liatrio/petclinic-tomcat"
-        PCF_CLI_IMAGE = "liatrio/cf-cli"
-        PCF_ORG = "mattos"
-        PCF_SPACE_TEST = "test"
-        PCF_SPACE_PROD = "production"
+        
     }
 
 
@@ -27,9 +24,10 @@ pipeline {
             }
             steps {
                 echo 'Changing routing rules to point to new version......'
+                withEnv
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
-                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o ${env.PCF_ORG} -s ${env.PCF_SPACE_PROD}"
+                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o mattos -s production"
                     sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
 
                 }
@@ -145,15 +143,16 @@ pipeline {
         }
 
         stage('Package') {
-            when { anyOf { branch 'master'; branch 'release-*' } }
+            when { anyOf { branch 'master' } }
             steps {
                 echo 'Generating package to store on docker repo or nexus'
-                sh 'sleep 2'
-               // script {
-               //     sh 'mvn install'
-               //     TAG = env.BRANCH_NAME
-               //     sh "docker build -t ${env.IMAGE}:${TAG} ."
-               // }
+                if ( env.BRANCH_NAME == 'master' ) {
+                    pom = readMavenPom file: 'pom.xml'
+                    TAG = pom.version
+                } else {
+                    TAG = env.BRANCH_NAME
+                }
+                sh "docker build -t ${env.IMAGE}:${TAG} ."
                 //nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
