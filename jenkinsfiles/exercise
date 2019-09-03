@@ -145,13 +145,15 @@ pipeline {
             when { anyOf { branch 'master' } }
             steps {
                 echo 'Generating package to store on docker repo or nexus'
-                if ( env.BRANCH_NAME == 'master' ) {
-                    pom = readMavenPom file: 'pom.xml'
-                    TAG = pom.version
-                } else {
-                    TAG = env.BRANCH_NAME
+                script {
+                    if ( env.BRANCH_NAME == 'master' ) {
+                        pom = readMavenPom file: 'pom.xml'
+                        TAG = pom.version
+                    } else {
+                        TAG = env.BRANCH_NAME
+                    }
+                    sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
-                sh "docker build -t ${env.IMAGE}:${TAG} ."
                 //nexusPublisher nexusInstanceId: 'LeoNexus', nexusRepositoryId: 'mattos', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/petclinic.war']], mavenCoordinate: [artifactId: 'spring-petclinic', groupId: 'com.mattos', packaging: 'war', version: '1.0']]], tagName: '1.0'
 
             }
