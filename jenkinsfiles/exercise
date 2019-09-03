@@ -10,6 +10,21 @@ pipeline {
 
 
     stages {
+        stage('test') {
+            steps {
+                withCfCli(
+                        apiEndpoint: 'https://api.cf-domain.example.com',
+                        skipSslValidation: false,
+                        cloudFoundryCliVersion: 'Cloud Foundry CLI (built-in)',
+                        credentialsId: 'cf-user-cleclerc-credentials',
+                        organization: 'my-org',
+                        space: 'development') {
+
+                    sh 'cf push my-app-name -p target/my-app*.war'
+
+                }
+            }
+        }
         stage('Build') {
             agent any
             steps {
