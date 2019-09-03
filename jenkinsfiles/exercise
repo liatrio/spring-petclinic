@@ -18,7 +18,7 @@ pipeline {
             when {  branch 'master'  }
             agent {
                 docker {
-                    image "${env.PCF_CLI_IMAGE}"
+                    image "liatrio/cf-cli"
                     args  '-u 0:0'
                 }
             }
