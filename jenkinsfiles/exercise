@@ -13,28 +13,6 @@ pipeline {
 
     stages {
 
-
-        stage('test') {
-            when {  branch 'master'  }
-            agent {
-                docker {
-                    image "liatrio/cf-cli"
-                    args  '-u 0:0'
-                }
-            }
-            steps {
-                echo 'Changing routing rules to point to new version......'
-                withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
-                    sh 'cf api https://api.run.pivotal.io '
-                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o mattos -s production"
-                    sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
-
-                }
-            }
-
-        }
-
-
         stage('Build') {
             agent any
             steps {
@@ -289,7 +267,7 @@ pipeline {
 
         stage('Update Load Balancer to Include Blue') {
             when {  branch 'master'  }
-            agent {
+           /* agent {
                 docker {
                     image 'liatrio/cf-cli'
                     args  '-u 0:0'
@@ -299,16 +277,21 @@ pipeline {
                 echo 'Changing routing rules to point to new version......'
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
-                    sh 'cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o mattos -s production"
                     sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
 
                 }
+            }*/
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                sh 'sleep 1'
             }
 
         }
 
         stage('Update Load Balancer to remove Green') {
             when {  branch 'master'  }
+            /*
             agent {
                 docker {
                     image 'liatrio/cf-cli'
@@ -323,6 +306,10 @@ pipeline {
                     sh 'cf unmap-route leo-pivotal-prod-green leo-exercise.cfapps.io'
 
                 }
+            } */
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                sh 'sleep 1'
             }
         }
 
@@ -353,6 +340,7 @@ pipeline {
 
         stage('Update Load Balancer to Include Green') {
             when {  branch 'master'  }
+            /*
             agent {
                 docker {
                     image 'liatrio/cf-cli'
@@ -367,13 +355,17 @@ pipeline {
                     sh 'cf map-route leo-pivotal-prod-green  leo-exercise.cfapps.io'
 
                 }
+            } */
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                sh 'sleep 1'
             }
 
         }
 
         stage('Update Load Balancer to remove Blue') {
             when {  branch 'master'  }
-            agent {
+            /*agent {
                 docker {
                     image 'liatrio/cf-cli'
                     args  '-u 0:0'
@@ -387,6 +379,10 @@ pipeline {
                     sh 'cf unmap-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
 
                 }
+            }*/
+            steps {
+                echo 'Changing routing rules to point to new version......'
+                sh 'sleep 1'
             }
         }
 
