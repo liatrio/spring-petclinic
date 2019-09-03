@@ -21,7 +21,7 @@ pipeline {
             when {  branch 'master'  }
             agent {
                 docker {
-                    image ${env.PCF_CLI_IMAGE}
+                    image "${env.PCF_CLI_IMAGE}"
                     args  '-u 0:0'
                 }
             }
