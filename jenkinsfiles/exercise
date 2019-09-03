@@ -78,6 +78,7 @@ pipeline {
             steps {
                 echo 'Generating package to store on docker repo or nexus'
                 script {
+                    sh 'mvn -B -DskipTests install'
                     TAG = env.BRANCH_NAME
                     sh "docker build -t ${env.IMAGE}:${TAG} ."
                 }
