@@ -49,9 +49,9 @@ pipeline {
 
                         echo 'Running quality scan with Sonar..... '
                         sh 'sleep 4'
-                        //withSonarQubeEnv(installationName: 'SonarQubeLeo', credentialsId: 'SONARQUBE_SECRET') {
-                        //    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.3.0.603:sonar -f pom.xml'
-                        //}
+                        withSonarQubeEnv(installationName: 'SonarQubeLeo', credentialsId: 'SONARQUBE_SECRET') {
+                            mvn sonar:sonar -Dsonar.projectKey=petclinic
+                        }
 
                     }
                 }
@@ -233,7 +233,7 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Blue environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                timeout(time: 200, unit: 'SECONDS') {
+                timeout(time: 400, unit: 'SECONDS') {
                     pushToCloudFoundry(
                             target: 'api.run.pivotal.io',
                             organization: 'mattos',
@@ -274,7 +274,7 @@ pipeline {
             steps {
                 echo 'Deploy to prod A Green environment....'
                 echo 'Validate Deploy with ......executeHealthCheck'
-                timeout(time: 200, unit: 'SECONDS') {
+                timeout(time: 400, unit: 'SECONDS') {
                     pushToCloudFoundry(
                             target: 'api.run.pivotal.io',
                             organization: 'mattos',
