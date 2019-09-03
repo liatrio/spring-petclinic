@@ -27,7 +27,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
                     sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o mattos -s production"
-                    sh 'cf map-route leo-pivotal-prod-blue cfapps.io'
+                    sh 'cf unmap-route leo-pivotal-prod-blue cfapps.io'
 
                 }
             }
