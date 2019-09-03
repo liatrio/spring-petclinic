@@ -25,7 +25,7 @@ pipeline {
                 echo 'Changing routing rules to point to new version......'
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
-                    sh 'cf login -u ${env.pcfUSER} -p ${env.pcfPASS}'
+                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS}"
                     sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
 
                 }
@@ -33,7 +33,7 @@ pipeline {
 
         }
 
-        
+
         stage('Build') {
             agent any
             steps {
