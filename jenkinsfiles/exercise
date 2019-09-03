@@ -7,6 +7,10 @@ pipeline {
         SONARQUBE_SECRET = credentials('SONARQUBE_SECRET')
 
         IMAGE = "liatrio/petclinic-tomcat"
+        PCF_CLI_IMAGE = "liatrio/cf-cli"
+        PCF_ORG = "mattos"
+        PCF_SPACE_TEST = "test"
+        PCF_SPACE_PROD = "production"
     }
 
 
@@ -17,7 +21,7 @@ pipeline {
             when {  branch 'master'  }
             agent {
                 docker {
-                    image 'liatrio/cf-cli'
+                    image ${env.PCF_CLI_IMAGE}
                     args  '-u 0:0'
                 }
             }
@@ -25,7 +29,7 @@ pipeline {
                 echo 'Changing routing rules to point to new version......'
                 withCredentials([usernamePassword(credentialsId: 'PCF_CREDENTIAL', passwordVariable: 'pcfPASS', usernameVariable: 'pcfUSER')]){
                     sh 'cf api https://api.run.pivotal.io '
-                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS}"
+                    sh "cf login -u ${env.pcfUSER} -p ${env.pcfPASS} -o ${env.PCF_ORG} -s ${env.PCF_SPACE_PROD}"
                     sh 'cf map-route leo-pivotal-prod-blue leo-exercise.cfapps.io'
 
                 }
